@@ -73,7 +73,7 @@
 <meta property="og:image" content="http://7xr2ax.com1.z0.glb.clouddn.com/yumingChoose.png">
 <meta property="og:image" content="http://7xr2ax.com1.z0.glb.clouddn.com/yumingPay.png">
 <meta property="og:image" content="http://7xr2ax.com1.z0.glb.clouddn.com/yumingManage.png">
-<meta property="og:updated_time" content="2016-02-20T11:05:09.202Z">
+<meta property="og:updated_time" content="2016-02-20T12:36:07.113Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="如何从零开始搭建一个属于自己的博客(篇一，注册自己的域名)">
 <meta name="twitter:description" content="摘要：这是一系例很详尽的独立博客搭建教程，里面介绍了域名注册、DNS设置、Github使用和Hexo设置等过程，这是我写得第一篇公开的教程，分享自己的心得体会。
@@ -99,7 +99,7 @@
   <title> 如何从零开始搭建一个属于自己的博客(篇一，注册自己的域名) | 智慧与力量 | 求知者 </title>
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="">
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
 
   
 
@@ -152,7 +152,17 @@
             
               <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
             
-            首頁
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
           </a>
         </li>
       
@@ -162,7 +172,7 @@
             
               <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
             
-            歸檔
+            归档
           </a>
         </li>
       
@@ -172,7 +182,7 @@
             
               <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
             
-            標籤
+            标签
           </a>
         </li>
       
@@ -227,7 +237,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-o"></i>
             </span>
-            <span class="post-meta-item-text">發表於</span>
+            <span class="post-meta-item-text">发表于</span>
             <time itemprop="dateCreated" datetime="2016-02-20T14:31:18+08:00" content="2016-02-20">
               2016-02-20
             </time>
@@ -259,9 +269,8 @@
 </blockquote>
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>拥有一个完全属于自己的域名和博客网站，这不是一件非常酷的事吗？如今对于技术小白，也可以很轻松地实现了。网上有很多这方面的教程，但是如果没有一点IT技术，会学得非常费劲，常常有些细节描述得不清楚自己就要绕弯路去找答案（善用搜索引擎，我在这里也进了很多坑）。所以我要把我自己搭建博客的过程详细地记录下来，给想建博客的人参考。这个教程一共分为四篇，分别是–注册域名，注册Github，配置DNS，使用Hexo,这是第一篇，教大家怎么注册域名。</p>
 <h3 id="什么是域名，一定要有自己的域名吗？"><a href="#什么是域名，一定要有自己的域名吗？" class="headerlink" title="什么是域名，一定要有自己的域名吗？"></a>什么是域名，一定要有自己的域名吗？</h3><p>域名（Domain Name），是由一串用点分隔的名字组成的Internet上某一台计算机或计算机组的名称，用来标记互联网上的某台计算机（服务器）。一个域名代表一个IP地址 ，它的目的是用来更加方便地记忆和沟通一组服务器的地址（网站，电子邮件，FTP等）。域名是独一无二、不可重复的，遵循先申请先注册为原则，因此在网络上域名是一种相对有限的资源，它的价值将随着注册企业的增多而逐步为人们所重视。那么是不是需要自己的域名呢，这个是要看自己的需要了，如果你想要直接从浏览器里敲入自己的名字（拼音或者英文名）就可以直接进入自己网站的这种爽快感，那么就要注册自己的域名，一个com国际域名一般一年是50元的管理费用。如果你不想出这笔钱，那么也可以直接用GitHub提供的一个域名。一般情况下都建议使用自己的域名，但是最主要的问题是很有可能你想注册的域名已经被别人注册了，所以在选择域名时需要自己权衡一下。</p>
-<h3 id="在哪里注册域名"><a href="#在哪里注册域名" class="headerlink" title="在哪里注册域名"></a>在哪里注册域名</h3><p>现在一般国内在 万网 <a href="http://wanwang.aliyun.com/" target="_blank" rel="external">http://wanwang.aliyun.com/</a>注册域名,万网已经是阿里云旗下的网站，可以直接用淘宝账号登录<br><br></p>
-<p><img src="http://7xr2ax.com1.z0.glb.clouddn.com/wanwangMainPahe.png" alt="万网主页"><br><br><br><br><br>国外的话可以在 godaddy <a href="https://sg.godaddy.com" target="_blank" rel="external">https://sg.godaddy.com</a>，也提供中文版本，同时也支持支付宝支付，如果你讨厌马云或者阿里巴巴，又或者从来没有用过淘宝，那么你可以在这里注册，参考<a href="http://godaddy.idcspy.com/domain-regist" target="_blank" rel="external">http://godaddy.idcspy.com/domain-regist</a><br><br><br><br><br><img src="http://7xr2ax.com1.z0.glb.clouddn.com/godaddyMainpage.png" alt="godaddy主页"><br><br><br><br><br>这编教程使用的是万网来注册域名，如果你想用godaddy，可以去找别的教程，也有很多人推荐godaddy注册域名</p>
-<h3 id="怎么注册域名"><a href="#怎么注册域名" class="headerlink" title="怎么注册域名"></a>怎么注册域名</h3><p>1.查找你想在注册的域名：<br><br><br><br><br><img src="http://7xr2ax.com1.z0.glb.clouddn.com/yumingSearch.png" alt="搜索域名"><br><br><br><br><br>2.选择自己喜欢的域名<br>在这里主要问题是如果你想要一个较短的域名的话，很有可能被别人注册了，<br><br><br><br><br><img src="http://7xr2ax.com1.z0.glb.clouddn.com/yumingChoose.png" alt="查看域名注册情况"><br><br><br><br><br>这时有两种选择，一是再加几个字母或者数据来区分，二是选择非Com域名，这个完全看自己的喜好了，我两者都有做(非Com域名便宜不少)，所以我注册了两个域名。<br><br><br>3.加入购物车(清单)<br><br><br>4.登录结算，<br>使用淘宝账号登录后，可以使用支付宝支付，但是在这里需要填写一些个人资料，相信很多人讨厌写这些东西，但也没办法，也许godaddy不需要写？我没试过。<br><br><br><br><br><img src="http://7xr2ax.com1.z0.glb.clouddn.com/yumingPay.png" alt="结算"><br><br><br><br><br>这里因为我以前有注册过，所以可以显示以前的注册信息，可以直接用来注册。如果是第一次的话需要写一些个人信息。<br><br><br>5.支付完成后就可以进入管理控制台了。<br><br><br><br><br><img src="http://7xr2ax.com1.z0.glb.clouddn.com/yumingManage.png" alt="域名管理台"><br><br><br><br><br>可以看到里面没有实名认证不影响使用</p>
+<h3 id="在哪里注册域名"><a href="#在哪里注册域名" class="headerlink" title="在哪里注册域名"></a>在哪里注册域名</h3><p>现在一般国内在 万网 <a href="http://wanwang.aliyun.com/" target="_blank" rel="external">http://wanwang.aliyun.com/</a>注册域名,万网已经是阿里云旗下的网站，可以直接用淘宝账号登录<br><br><br><img src="http://7xr2ax.com1.z0.glb.clouddn.com/wanwangMainPahe.png" alt="万网主页"><br><br><br>国外的话可以在 godaddy <a href="https://sg.godaddy.com" target="_blank" rel="external">https://sg.godaddy.com</a>，也提供中文版本，同时也支持支付宝支付，如果你不喜欢阿里巴巴，又或者从来没有用过淘宝，那么你可以在这里注册，参考<a href="http://godaddy.idcspy.com/domain-regist" target="_blank" rel="external">http://godaddy.idcspy.com/domain-regist</a><br><br><br><img src="http://7xr2ax.com1.z0.glb.clouddn.com/godaddyMainpage.png" alt="godaddy主页"><br><br><br>这编教程使用的是万网来注册域名，如果你想用godaddy，可以去找别的教程，也有很多人推荐godaddy注册域名</p>
+<h3 id="怎么注册域名"><a href="#怎么注册域名" class="headerlink" title="怎么注册域名"></a>怎么注册域名</h3><p>1.查找你想在注册的域名：<br><br><br><br><br><img src="http://7xr2ax.com1.z0.glb.clouddn.com/yumingSearch.png" alt="搜索域名"><br><br><br>2.选择自己喜欢的域名<br>在这里主要问题是如果你想要一个较短的域名的话，很有可能被别人注册了，<br><br><br><img src="http://7xr2ax.com1.z0.glb.clouddn.com/yumingChoose.png" alt="查看域名注册情况"><br><br><br>这时有两种选择，一是再加几个字母或者数据来区分，二是选择非Com域名，这个完全看自己的喜好了，我两者都有做(非Com域名便宜不少)，所以我注册了两个域名。<br><br><br>3.加入购物车(清单)<br><br><br>4.登录结算，<br>使用淘宝账号登录后，可以使用支付宝支付，但是在这里需要填写一些个人资料，相信很多人讨厌写这些东西，但也没办法，也许godaddy不需要写？我没试过。<br><br><br><img src="http://7xr2ax.com1.z0.glb.clouddn.com/yumingPay.png" alt="结算"><br><br><br><br><br>这里因为我以前有注册过，所以可以显示以前的注册信息，可以直接用来注册。如果是第一次的话需要写一些个人信息。<br><br><br>5.支付完成后就可以进入管理控制台了。<br><br><br><img src="http://7xr2ax.com1.z0.glb.clouddn.com/yumingManage.png" alt="域名管理台"><br><br><br>可以看到里面没有实名认证不影响使用</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>相对于godaddy,在万网上注册域名其实是非常简单的，就像在淘宝买东西一样，直接用淘宝账号登录再用支付宝支付就行，对于从不用淘宝或者支付宝的人来说，选择godaddy也不错。下一编我向大家讲解怎么注册GitHub和使用GitHub Pages来做托管网站。</p>
 
       
@@ -341,10 +350,10 @@
       
         <ul class="sidebar-nav motion-element">
           <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目錄
+            文章目录
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
-            本站概覽
+            站点概览
           </li>
         </ul>
       
@@ -361,7 +370,7 @@
           <div class="site-state-item site-state-posts">
             <a href="/archives">
               <span class="site-state-item-count">2</span>
-              <span class="site-state-item-name">文章</span>
+              <span class="site-state-item-name">日志</span>
             </a>
           </div>
           
@@ -371,7 +380,7 @@
             <div class="site-state-item site-state-tags">
               <a href="/tags">
                 <span class="site-state-item-count">4</span>
-                <span class="site-state-item-name">標籤</span>
+                <span class="site-state-item-name">标签</span>
               </a>
             </div>
           
@@ -459,11 +468,11 @@
 </div>
 
 <div class="powered-by">
-  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 強力驅動
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
 </div>
 
 <div class="theme-info">
-  主題 -
+  主题 -
   <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
     NexT.Pisces
   </a>
