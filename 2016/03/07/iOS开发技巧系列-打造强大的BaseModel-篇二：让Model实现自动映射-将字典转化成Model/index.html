@@ -1,0 +1,761 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS开发," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="本文是iOS开发技巧系列—打造强大的BaseModel中的篇二，第一篇文章请见此：（http://stanhu.cc/2016/03/06/iOS%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7%E7%B3%BB%E5%88%97-%E6%89%93%E9%80%A0%E5%BC%BA%E5%A4%A7%E7%9A%84BaseModel-%E7%AF%87%E4%B8%8">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS开发技巧系列---打造强大的BaseModel(篇二：让Model实现自动映射--将字典转化成Model)">
+<meta property="og:url" content="http://stanhu.cc/2016/03/07/iOS开发技巧系列-打造强大的BaseModel-篇二：让Model实现自动映射-将字典转化成Model/index.html">
+<meta property="og:site_name" content="智慧与力量 | 求知者">
+<meta property="og:description" content="本文是iOS开发技巧系列—打造强大的BaseModel中的篇二，第一篇文章请见此：（http://stanhu.cc/2016/03/06/iOS%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7%E7%B3%BB%E5%88%97-%E6%89%93%E9%80%A0%E5%BC%BA%E5%A4%A7%E7%9A%84BaseModel-%E7%AF%87%E4%B8%8">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1281203-d2bc82910235745d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2016-03-07T12:34:55.326Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS开发技巧系列---打造强大的BaseModel(篇二：让Model实现自动映射--将字典转化成Model)">
+<meta name="twitter:description" content="本文是iOS开发技巧系列—打造强大的BaseModel中的篇二，第一篇文章请见此：（http://stanhu.cc/2016/03/06/iOS%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7%E7%B3%BB%E5%88%97-%E6%89%93%E9%80%A0%E5%BC%BA%E5%A4%A7%E7%9A%84BaseModel-%E7%AF%87%E4%B8%8">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"always"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> iOS开发技巧系列---打造强大的BaseModel(篇二：让Model实现自动映射--将字典转化成Model) | 智慧与力量 | 求知者 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">智慧与力量 | 求知者</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">创作，英语，编程，学习......</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-画廊">
+          <a href="/gal/g.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-question-circle fa-fw"></i> <br />
+            
+            menu.画廊
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                iOS开发技巧系列---打造强大的BaseModel(篇二：让Model实现自动映射--将字典转化成Model)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-03-07T20:30:02+08:00" content="2016-03-07">
+              2016-03-07
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/03/07/iOS开发技巧系列-打造强大的BaseModel-篇二：让Model实现自动映射-将字典转化成Model/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/03/07/iOS开发技巧系列-打造强大的BaseModel-篇二：让Model实现自动映射-将字典转化成Model/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>本文是iOS开发技巧系列—打造强大的BaseModel中的篇二，第一篇文章请见此：（<a href="http://stanhu.cc/2016/03/06/iOS%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7%E7%B3%BB%E5%88%97-%E6%89%93%E9%80%A0%E5%BC%BA%E5%A4%A7%E7%9A%84BaseModel-%E7%AF%87%E4%B8%80%EF%BC%9A%E8%AE%A9Model%E8%87%AA%E6%88%91%E6%8F%8F%E8%BF%B0/）">http://stanhu.cc/2016/03/06/iOS%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7%E7%B3%BB%E5%88%97-%E6%89%93%E9%80%A0%E5%BC%BA%E5%A4%A7%E7%9A%84BaseModel-%E7%AF%87%E4%B8%80%EF%BC%9A%E8%AE%A9Model%E8%87%AA%E6%88%91%E6%8F%8F%E8%BF%B0/）</a><br>这篇文章将讲述Model一项更高级也最常用的功能，让Model实现自动映射–将字典转化成Model(所有代码全由Swift实现)</p>
+</blockquote>
+<h3 id="将JSON转化为Model的意义"><a href="#将JSON转化为Model的意义" class="headerlink" title="将JSON转化为Model的意义"></a>将JSON转化为Model的意义</h3><p>在iOS开发中，基于Model的数据流起到了至关重要的作用。从网络获取的数据需要进一步处理转到成View可用的Model,再通过ViewController传送给View展示出来,从View中反馈的数据也可以转为为Model,再将Model转化成JSON发送给服务器。通常开发过程中需要最频繁处理的还是将JOSN转化成对应的Model,目前市面上许多非常好用的JSON-Model库，比如MJ大神的MJExtension,还有Matle及JSONModel。</p>
+<p>目前我还从未在项目里用到这些库，有兴趣的读者可以自行去试试这些开源库，也可以去看看它们的源码。这篇文章主要是讨论如何用简单的代码写一个基类Model，让子类可以自动实现从字典获取数据再转化为自身。功能并不算强大，但是还是比较实用的。</p>
+<p>将字典转化为Model这个过程中，最简单便捷的情况就是字典的Key与Model的属性名是一一对应的，这样只要使用简单的KVC即可完成JOSN-Model转换。但是实际开发过程中很少出现这情况，也许你的命名风格和服务器开发的同事的命名风格不一样，也许同一个属性名在不同的接口有不一样的名字，总之很难达到这种理想的情况。我们最后还是要乖乖按服务器的同事给的Key名来转换。</p>
+<p>先前我都是使用简单的Dict[Key]的取值方式来实现JOSN-Model转换，这种情况在Objc还是比较好用的，写起来很方便，但是在Swift里就完全行不通了，各种强制转换写起来很啰嗦很不爽。SwiftyJSON就是为了解决这种问题诞生的。用了SwiftyJSON看起来确实好了不少，但是还是要写很多重复的代码来转换，降低了开发效率。</p>
+<h3 id="使用KVC来实现字典-Model转换"><a href="#使用KVC来实现字典-Model转换" class="headerlink" title="使用KVC来实现字典-Model转换"></a>使用KVC来实现字典-Model转换</h3><p>所以最好还是让Model可以自动实现字典-Model映射。既然有这么强大的KVC可以用，那为什么不用呢？按照这个思路，我用Swift写下了以下代码,先定义一个协议，里面有一个静态方法，目的是将一个字典转化成一个Self对象</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">protocol</span> <span class="title">MapAble</span></span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="func"><span class="keyword">func</span> <span class="title">mapModel</span><span class="params">(obj:AnyObject)</span></span>-&gt;<span class="type">Self</span>  <span class="comment">//将一个字典转化成自己</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>需要在GrandModel里处理一些东西</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义一个Model</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GrandModel</span>:<span class="title">NSObject</span> </span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">var</span> <span class="title">selfMapDescription</span>:[<span class="title">String</span>:<span class="title">String</span>]?</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">required</span> <span class="keyword">override</span> <span class="keyword">init</span>() &#123;</span><br><span class="line">        <span class="keyword">super</span>.<span class="keyword">init</span>()</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>在extension里面实现协议</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">GrandModel</span>:<span class="title">MapAble</span></span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="func"><span class="keyword">func</span> <span class="title">mapModel</span><span class="params">(obj:AnyObject)</span></span>-&gt;<span class="type">Self</span>&#123;</span><br><span class="line">        <span class="keyword">let</span> model = <span class="keyword">self</span>.<span class="keyword">init</span>()</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> mapTable = <span class="keyword">self</span>.selfMapDescription&#123;</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">let</span> dict = obj <span class="keyword">as</span>? [<span class="type">String</span>:<span class="type">AnyObject</span>]</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">for</span> item <span class="keyword">in</span> dict&#123;</span><br><span class="line">                    <span class="keyword">if</span> <span class="keyword">let</span> key = mapTable[item.<span class="number">0</span>]&#123;</span><br><span class="line">                        <span class="built_in">print</span>(<span class="string">"key 为<span class="subst">\(item.<span class="number">0</span>)</span>将要被设成<span class="subst">\(mapTable[item.<span class="number">0</span>)</span>,其值是 <span class="subst">\(item.<span class="number">1</span>)</span>"</span>)</span><br><span class="line">                        model.setValue(item.<span class="number">1</span>, forKey: key)</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> model</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码层次比较深，看起来有点乱，但总体逻辑却很简单。selfMapDescription是一个Class静态属性，它描述了字典的Key是怎么和Model的属性名是怎么映射的。子类需要重写这个属性。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">required</span> <span class="keyword">override</span> <span class="keyword">init</span>()</span><br></pre></td></tr></table></figure>
+<p>这是一个构造器，并且标记为required，说明是必需的。作用是保证该类是可以初始化的，只有这样extension里的self.init()语句才不会报错。因为如果子类也不提供构造器的话，那么该类不能正常用构造器实例化，也就是不能用init()方法了。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> model = <span class="keyword">self</span>.<span class="keyword">init</span>()</span><br><span class="line"><span class="keyword">let</span> mapTable = <span class="keyword">self</span>.selfMapDescription</span><br></pre></td></tr></table></figure>
+<p>这个就比较好解释了，在静态方法里面，self是一个Type类型，表示运行时的类型。它可以调用init()直接实例化一个运行时继承于GrandModel的类。接下来的代码就比较简单了，只要简单将字典里的Value用KVC一个一个给Model赋值就行了。赋值完成后再返回该对象</p>
+<p>下面我们来看子类如何继承该类，并且怎么使用些功能<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoClass</span>:<span class="title">GrandModel</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name:<span class="type">String</span>?</span><br><span class="line">    <span class="keyword">var</span> age:<span class="type">Int</span>?</span><br><span class="line">    <span class="keyword">var</span> grade:<span class="type">Int</span>?</span><br><span class="line">    <span class="comment">//需要重写selfMapDescription</span></span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">static</span> <span class="keyword">var</span> selfMapDescription:[<span class="type">String</span>:<span class="type">String</span>]?&#123;</span><br><span class="line">        <span class="keyword">return</span> [<span class="string">"sName"</span>:<span class="string">"name"</span>,<span class="string">"iAge"</span>:<span class="string">"age"</span>,<span class="string">"iGrade"</span>:<span class="string">"grade"</span>]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//下面来测试</span></span><br><span class="line"><span class="keyword">let</span> demoDict = [<span class="string">"sName"</span>:<span class="string">"Stan"</span>,<span class="string">"iAge"</span>:<span class="string">"12"</span>,<span class="string">"iGrade"</span>:<span class="string">"6"</span>]</span><br><span class="line"><span class="keyword">var</span> demo = <span class="type">DemoClass</span>()</span><br><span class="line">demo = <span class="type">DemoClass</span>.mapModel(demoDict)</span><br><span class="line"><span class="built_in">print</span>(demo)</span><br><span class="line"><span class="comment">//打印结果：</span></span><br><span class="line">key 为sName将要被设成<span class="type">Optional</span>(<span class="string">"name"</span>),其值是 <span class="type">Stan</span></span><br><span class="line">key 为iGrade将要被设成<span class="type">Optional</span>(<span class="string">"grade"</span>),其值是 <span class="number">6</span></span><br><span class="line">没有这个字段-------grade</span><br><span class="line">key 为iAge将要被设成<span class="type">Optional</span>(<span class="string">"age"</span>),其值是 <span class="number">12</span></span><br><span class="line">没有这个字段-------age</span><br></pre></td></tr></table></figure></p>
+<p>这里有奇怪的地方，明明DemoClass有两个Int类型的属性，但是又说找不到？其实在这里参考第一篇文章就很容易明白，这两个属性是Int?的类型的，而Objc里面是没有于之对应的类型的，可以在这个属性前面加上@objc试试<br><img src="http://upload-images.jianshu.io/upload_images/1281203-d2bc82910235745d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Xcode Wrong"><br>可以看见XCode报错了。Int？不能表现为Objc类型，所以在Objc运行时里面是找不到与之对应的类型，自然不能加上@Objc标记了。<br>那么怎么办？其实很简单，给它一个初始值就行了,在运行时可以将其转化成Objc的类型<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoClass</span>:<span class="title">GrandModel</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name:<span class="type">String</span>?</span><br><span class="line">    <span class="keyword">var</span> age:<span class="type">Int</span> = <span class="number">0</span></span><br><span class="line">    <span class="keyword">var</span> grade:<span class="type">Int</span> = <span class="number">0</span></span><br><span class="line"> <span class="comment">//后面的省略了</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//下面打印的结果完全符合预期</span></span><br><span class="line">key 为sName将要被设成<span class="type">Optional</span>(<span class="string">"name"</span>),其值是 <span class="type">Stan</span></span><br><span class="line">key 为iGrade将要被设成<span class="type">Optional</span>(<span class="string">"grade"</span>),其值是 <span class="number">6</span></span><br><span class="line">key 为iAge将要被设成<span class="type">Optional</span>(<span class="string">"age"</span>),其值是 <span class="number">12</span></span><br><span class="line"><span class="type">Optional</span>(name)</span><br><span class="line"><span class="type">DemoClass</span>:[<span class="string">"age"</span>: <span class="number">12</span>, <span class="string">"grade"</span>: <span class="number">6</span>, <span class="string">"name"</span>: <span class="type">Stan</span>]</span><br></pre></td></tr></table></figure></p>
+<p>现在打印出的结果是完全符合我们的预期了。KVC的强大之处在这里表现得淋漓尽致，我们根本不需要理会这些基本数据类型，KVC可以帮我们搞定。</p>
+<h3 id="两个问题和解决方案"><a href="#两个问题和解决方案" class="headerlink" title="两个问题和解决方案"></a>两个问题和解决方案</h3><p>但是目前还有两个问题：一是如果接口有多种风格的属性名，比如这个接口将UserName，另一个叫做sUserName，又或者叫userName等，多种不同的属性名。至少我现在在做的项目至少有三种类型。其实这个非常简单，直接把所有属性的名字添加到selfMapDescription里面就行<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//需要重写selfMapDescription</span></span><br><span class="line"><span class="keyword">override</span> <span class="keyword">static</span> <span class="keyword">var</span> selfMapDescription:[<span class="type">String</span>:<span class="type">String</span>]?&#123;</span><br><span class="line">    <span class="keyword">return</span>[<span class="string">"sName"</span>:<span class="string">"name"</span>,<span class="string">"iAge"</span>:<span class="string">"age"</span>,<span class="string">"iGrade"</span>:<span class="string">"grade"</span>,<span class="string">"UserName"</span>:<span class="string">"userName"</span>,<span class="string">"sUserName"</span>:<span class="string">"userName"</span>,<span class="string">"userName"</span>:<span class="string">"userName"</span>]<span class="comment">//将这个三属性名全部映射到userName</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>第二个问题，如果返回的数据里嵌套了复杂类型，比如Array，Dictionary或者是其他对象等，KVC就不能帮你自动转了<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoOther</span>: <span class="typename">GrandModel &#123;</span></span></span><br><span class="line">    <span class="variable"><span class="keyword">var</span> userName</span>:String?</span><br><span class="line">    <span class="keyword">override</span> static <span class="variable"><span class="keyword">var</span> selfMapDescription</span>:[String:String]?&#123;</span><br><span class="line">        <span class="keyword">return</span> [ <span class="string">"userName"</span>:<span class="string">"userName"</span>]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoClass</span>:<span class="typename">GrandModel &#123;</span></span></span><br><span class="line">    <span class="variable"><span class="keyword">var</span> name</span>:String?</span><br><span class="line">    <span class="variable"><span class="keyword">var</span> age</span>:<span class="typename">Int</span> = <span class="number">0</span></span><br><span class="line">    <span class="variable"><span class="keyword">var</span> grade</span>:<span class="typename">Int</span> = <span class="number">0</span></span><br><span class="line">    <span class="variable"><span class="keyword">var</span> userName</span>:String?</span><br><span class="line">    <span class="variable"><span class="keyword">var</span> otherClass</span>:DemoOther?</span><br><span class="line">    <span class="variable"><span class="keyword">var</span> otherClasses</span>:[DemoOther]?</span><br><span class="line">    <span class="comment">//需要重写selfMapDescription</span></span><br><span class="line">    <span class="keyword">override</span> static <span class="variable"><span class="keyword">var</span> selfMapDescription</span>:[String:String]?&#123;</span><br><span class="line">        <span class="keyword">return</span> [<span class="string">"sName"</span>:<span class="string">"name"</span>,</span><br><span class="line">            <span class="string">"iAge"</span>:<span class="string">"age"</span>,</span><br><span class="line">            <span class="string">"iGrade"</span>:<span class="string">"grade"</span>,</span><br><span class="line">            <span class="string">"UserName"</span>:<span class="string">"userName"</span>,</span><br><span class="line">            <span class="string">"sUserName"</span>:<span class="string">"userName"</span>,</span><br><span class="line">            <span class="string">"userName"</span>:<span class="string">"userName"</span>,</span><br><span class="line">        <span class="string">"DemoOther"</span>:<span class="string">"otherClass"</span>,</span><br><span class="line">        <span class="string">"DemoOthers"</span>:<span class="string">"otherClasses"</span>]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//下面来测试</span></span><br><span class="line"></span><br><span class="line">let demoDict = [<span class="string">"sName"</span>:<span class="string">"Stan"</span>,<span class="string">"iAge"</span>:<span class="string">"12"</span>,<span class="string">"iGrade"</span>:<span class="string">"6"</span>,<span class="string">"UserName"</span>:<span class="string">"userName"</span>,<span class="string">"DemoOther"</span>:[<span class="string">"userName"</span>:<span class="string">"OtherUserName"</span>],</span><br><span class="line">    <span class="string">"DemoOthers"</span>:[[<span class="string">"userName"</span>:<span class="string">"OtherUserName1"</span>],[<span class="string">"userName"</span>:<span class="string">"OtherUserName2"</span>]]</span><br><span class="line">]</span><br><span class="line"><span class="variable"><span class="keyword">var</span> demo</span> = DemoClass()</span><br><span class="line">demo = DemoClass.mapModel(demoDict)</span><br><span class="line">print(demo.otherClass)</span><br><span class="line"><span class="comment">//打印出来是这东西，</span></span><br><span class="line"><span class="comment">//Optional(&#123; userName = OtherUserName;&#125;)</span></span><br></pre></td></tr></table></figure></p>
+<p>打印出的数据虽然看起来好像是正确的，但是其实格式是错误的。也就是说，KVC不能转化复杂的或者自定义的对象。只能自己手动写了。<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">demo.otherClass = <span class="type">DemoOther</span>.mapModel(demoDict[<span class="string">"DemoOther"</span>]!)</span><br><span class="line"><span class="built_in">print</span>(demo.otherClass)</span><br><span class="line"><span class="comment">//打印出来是这东西，</span></span><br><span class="line"><span class="comment">//**Optional(DemoOther:["userName": OtherUserName])**</span></span><br></pre></td></tr></table></figure></p>
+<p>这下打印出的东西就符合预期了，数组对象也一样，用个循环来转化即可。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>上面的轻量型字典-Model转换方案虽然在功能上不能和第三方的Json-Model库相比，但对于大部分项目来说，还是够用了。使用KVC带来的性能上的损失我还是可以接受的，我讨厌写重复的代码。好了，以上就是第二篇的全部内容。请期待后面的  iOS开发技巧系列—打造强大的BaseModel 终极篇</p>
+<div class="ds-thread" data-thread-key="2016/03/07/iOS开发技巧系列-打造强大的BaseModel-篇二：让Model实现自动映射-将字典转化成Model" data-title="iOS开发技巧系列-打造强大的BaseModel-篇二：让Model实现自动映射-将字典转化成Model" data-url="http://stanhu.cc/2016/03/07/iOS开发技巧系列-打造强大的BaseModel-篇二：让Model实现自动映射-将字典转化成Model"></div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS开发/" rel="tag">#iOS开发</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/06/茲卡病毒是如何可能造成孩童出生的生理缺陷的/" rel="next" title="(翻译)茲卡病毒是如何可能造成孩童出生的生理缺陷的">
+                <i class="fa fa-chevron-left"></i> (翻译)茲卡病毒是如何可能造成孩童出生的生理缺陷的
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"syanhu"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- 多说公共JS代码 end -->
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="Stan Hu" />
+          <p class="site-author-name" itemprop="name">Stan Hu</p>
+          <p class="site-description motion-element" itemprop="description">学习总结，思考感悟，求知奋斗</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+          
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/DuckDeck" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/stan-hu" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> ZhiHu
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/users/ba6dc2f48796/latest_articles" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> JianShu
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#将JSON转化为Model的意义"><span class="nav-number">1.</span> <span class="nav-text">将JSON转化为Model的意义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用KVC来实现字典-Model转换"><span class="nav-number">2.</span> <span class="nav-text">使用KVC来实现字典-Model转换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#两个问题和解决方案"><span class="nav-number">3.</span> <span class="nav-text">两个问题和解决方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Stan Hu</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'syanhu';
+      var disqus_identifier = '2016/03/07/iOS开发技巧系列-打造强大的BaseModel-篇二：让Model实现自动映射-将字典转化成Model/';
+      var disqus_title = 'iOS开发技巧系列---打造强大的BaseModel(篇二：让Model实现自动映射--将字典转化成Model)';
+      var disqus_url = 'http://stanhu.cc/2016/03/07/iOS开发技巧系列-打造强大的BaseModel-篇二：让Model实现自动映射-将字典转化成Model/';
+
+      function run_disqus_script(disqus_script){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+      
+        run_disqus_script('embed.js');
+      
+    </script>
+  
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>
