@@ -1,0 +1,790 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS开发," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="本文是iOS开发技巧系列—打造强大的BaseModel中的第四篇，前面三篇文章都可以看我有主页面里面找到，这里就不贴链接了。如果你没有看过前面三篇文章的话，建议在看这篇文章之前先去看看，熟悉一下iOS Runtime的一些东西以及纯Swift类型和Objc类型的异同。而这篇文章则讨论了Swift的反射功能，的iOS Runtime不一样，Swift的反射用了另一套API，实现机制也完全不一样，倒是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS开发技巧系列---打造强大的BaseModel(篇四：使用Swift反射)">
+<meta property="og:url" content="http://stanhu.cc/2016/03/14/ios-essay-grand-model-no4/index.html">
+<meta property="og:site_name" content="智慧与力量 | 求知者">
+<meta property="og:description" content="本文是iOS开发技巧系列—打造强大的BaseModel中的第四篇，前面三篇文章都可以看我有主页面里面找到，这里就不贴链接了。如果你没有看过前面三篇文章的话，建议在看这篇文章之前先去看看，熟悉一下iOS Runtime的一些东西以及纯Swift类型和Objc类型的异同。而这篇文章则讨论了Swift的反射功能，的iOS Runtime不一样，Swift的反射用了另一套API，实现机制也完全不一样，倒是">
+<meta property="og:updated_time" content="2016-03-14T12:06:01.356Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS开发技巧系列---打造强大的BaseModel(篇四：使用Swift反射)">
+<meta name="twitter:description" content="本文是iOS开发技巧系列—打造强大的BaseModel中的第四篇，前面三篇文章都可以看我有主页面里面找到，这里就不贴链接了。如果你没有看过前面三篇文章的话，建议在看这篇文章之前先去看看，熟悉一下iOS Runtime的一些东西以及纯Swift类型和Objc类型的异同。而这篇文章则讨论了Swift的反射功能，的iOS Runtime不一样，Swift的反射用了另一套API，实现机制也完全不一样，倒是">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"always"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> iOS开发技巧系列---打造强大的BaseModel(篇四：使用Swift反射) | 智慧与力量 | 求知者 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">智慧与力量 | 求知者</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">创作，英语，编程，学习......</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-画廊">
+          <a href="/gal/g.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-question-circle fa-fw"></i> <br />
+            
+            menu.画廊
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                iOS开发技巧系列---打造强大的BaseModel(篇四：使用Swift反射)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-03-14T20:03:09+08:00" content="2016-03-14">
+              2016-03-14
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/03/14/ios-essay-grand-model-no4/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/03/14/ios-essay-grand-model-no4/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>本文是iOS开发技巧系列—打造强大的BaseModel中的第四篇，前面三篇文章都可以看我有主页面里面找到，这里就不贴链接了。如果你没有看过前面三篇文章的话，建议在看这篇文章之前先去看看，熟悉一下iOS Runtime的一些东西以及纯Swift类型和Objc类型的异同。而这篇文章则讨论了Swift的反射功能，的iOS Runtime不一样，Swift的反射用了另一套API，实现机制也完全不一样，倒是和目前其他的面向对象语言有些相似，比如C#和Java。不过Swift作为一门很新的语言，目前正在高速发展中，其反射功能和和主流的高级语言还没法比，但是我相信Apple会在将来大大加强Swift的反射功能，以追上目前主流语言的脚步。</p>
+</blockquote>
+<h3 id="iOS-Runtime目前存在的问题"><a href="#iOS-Runtime目前存在的问题" class="headerlink" title="iOS Runtime目前存在的问题"></a>iOS Runtime目前存在的问题</h3><p>关于iOS Runtime的文章有很多，在简书里一搜就能找出一大堆，但是大多数都是介绍什么是iOS Runtime及怎么使用Runtime。其实基于Objc的Runtime是iOS开发的黑魔法，甚至可以是说奇技淫巧，比如神奇的Method Swizzle可以交换任何iOS的系统方法，在里面加上自己定义的一些功能。再比如消息转发机制，又比如说一些位于<objc runtime.h="">中的方法，比如class_copyIvarList等方法，可以动态获取一个类里面所有的方法和属性，还有就是动态给一个类添加属性和方法。Objc的Runtime是如此的强大，再加上KVC和KVO这两个利器，可以实现很多你根本就想不到的功能，给iOS开发带来极大的便捷。<br>使用iOS Runtime好处非常多，但缺点也是显而易见的，主要有下面几个：</objc></p>
+<ul>
+<li>基于Objc的Runtime不是类型安全的，需要开发者保证所有数据都是正确的类型。</li>
+<li>Runtime还是需要进行数据类型的检查，影响了执行效率。</li>
+<li>Apple推出全新的Swift语言后，单纯的Swift类型不再兼容原先的Objc的Runtime，</li>
+</ul>
+<p>其中前面两个问题影响不大，关键在于第三个。基于Swift作为一门静态语言，所有数据的类型都是在编译时就确定好了的，但是Apple为了让Swift兼容Objc，让Swift也使用了Runtime。这显然会拖累Swift的运行效率，和Apple所宣称Swift具有超越Objective-C的性能的观点完全不符。而Swift在将来是会慢慢替代 Objective-C的成为iOS或者OSX开发的主流语言，所以为了性能，我们应该尽量使用原生的Swift数据类型，避免让Runtime进行Swift类型-&gt;Objc类型的隐式转换。</p>
+<p>所以目前的问题是使用Swift原生的数据类型和想要使用Objc的Runtime有了冲突，那么Swift语言里有没有类似于Objc的Runtime的一套机制，让Swift数据类型也能实现Objc的Runtime的一些功能呢？</p>
+<p>很遗憾，这个答案是NO，Swift目前只有有限的反射功能，完全不能和Objc的Runtime相比。</p>
+<h3 id="什么是反射"><a href="#什么是反射" class="headerlink" title="什么是反射"></a>什么是反射</h3><blockquote>
+<p>反射是一种计算机处理方式。是程序可以访问、检测和修改它本身状态或行为的一种能力。</p>
+</blockquote>
+<p>上面的话来自百度百科。使用反射有什么用，看一些iOS Runtime的文章应该会很明白。下面再列举一下</p>
+<ul>
+<li>动态地创建对象和属性，</li>
+<li>动态地获取一个类里面所有的属性，方法。</li>
+<li>获取它的父类，或者是实现了什么样的接口(协议)</li>
+<li>获取这些类和属性的访问限制(Public 或者 Private)</li>
+<li>动态地获取运行中对象的属性值，同时也能给它赋值(KVC)</li>
+<li>动态调用实例方法或者类方法</li>
+<li>动态的给类添加方法或者属性，还可以交换方法(只限于Objective-C)</li>
+</ul>
+<p>上面的一系列功能的细节和计算机语言的不同而不同。对于Objective-C来说，位于<objc runtime.h="">中的一系列方法就是完成这些功能的，严格来说Runtime并不是反射。而Swift真正拥有了反射功能，但是功能非常弱，目前只能访问和检测它本身，还不能修改。</objc></p>
+<h3 id="Swift的反射"><a href="#Swift的反射" class="headerlink" title="Swift的反射"></a>Swift的反射</h3><p>Swift的反射机制是基于一个叫Mirror的Stuct来实现的。具体的操作方式为：首先创建一个你想要反射的类的实例，再传给Mirror的构造器来实例化一个Mirror对象，最后使用这个Mirror来获取你想要的东西。<br>首先我们来写一些测试用的类<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">protocol</span> <span class="title">Drive</span></span>&#123;</span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">run</span><span class="params">()</span></span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>  <span class="class"><span class="keyword">class</span> <span class="title">Tire</span></span>&#123; <span class="comment">//轮胎</span></span><br><span class="line">    <span class="keyword">var</span> brand:<span class="type">String</span>? <span class="comment">//品牌</span></span><br><span class="line">    <span class="keyword">var</span> size:<span class="type">Float</span> = <span class="number">0</span> <span class="comment">//大小</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Vehicle</span>:<span class="title">Drive</span></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> carType:<span class="type">String</span>?</span><br><span class="line">    <span class="keyword">var</span> tires:[<span class="type">Tire</span>]?</span><br><span class="line">    <span class="keyword">var</span> host:<span class="type">String</span>?<span class="comment">// 主人</span></span><br><span class="line">    <span class="keyword">var</span> brand:<span class="type">String</span>?<span class="comment">//汽车品牌</span></span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">run</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> h = host&#123;</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">"<span class="subst">\(h)</span>Drive a <span class="subst">\(brand)</span> <span class="subst">\(carType)</span> car run"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">"this car is not selled"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Trunk</span>:<span class="title">Vehicle</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">var</span> packintBox:<span class="type">String</span>?</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">struct</span> <span class="title">TranGroup</span></span>&#123; <span class="comment">//货运集团</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> trunks = &#123;</span><br><span class="line">        <span class="keyword">return</span> [<span class="type">Trunk</span>]()</span><br><span class="line">    &#125;()</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">var</span> country:<span class="type">String</span>?</span><br><span class="line">    <span class="keyword">var</span> turnover:<span class="type">Float</span>?</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//一个中国的货运集团</span></span><br><span class="line"><span class="keyword">var</span> tranGroup = <span class="type">TranGroup</span>(trunks: [<span class="type">Trunk</span>](), country: <span class="string">"China"</span>, turnover: <span class="number">123456789.111</span>)</span><br><span class="line"><span class="keyword">let</span> trunk1 = <span class="type">Trunk</span>()</span><br><span class="line">trunk1.brand = <span class="string">"MAN"</span></span><br><span class="line">trunk1.host = <span class="string">"Stan"</span></span><br><span class="line">trunk1.packintBox = <span class="string">"Big And Long"</span></span><br><span class="line">tranGroup.trunks.append(trunk1)</span><br><span class="line"><span class="keyword">let</span> mirrorTran = <span class="type">Mirror</span>(reflecting: tranGroup)</span><br><span class="line"><span class="built_in">print</span>(tranGroup) <span class="comment">//打印出  Mirror for TranGroup</span></span><br><span class="line"><span class="built_in">print</span>(mirrorTran.subjectType) <span class="comment">//打印出  TranGroup</span></span><br><span class="line"><span class="built_in">print</span>(mirrorTran.displayStyle) <span class="comment">//Optional(Swift.Mirror.DisplayStyle.Struct)，是个Struct类型</span></span><br><span class="line"><span class="built_in">print</span>(mirrorTran.superclassMirror()) <span class="comment">//nil，因为没有父类</span></span><br><span class="line"><span class="keyword">for</span> (key,value) <span class="keyword">in</span> mirrorTran.children&#123;</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"<span class="subst">\(key)</span> : <span class="subst">\(value)</span>"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//打印结果</span></span><br><span class="line"><span class="type">Optional</span>(<span class="string">"trunks"</span>) : [<span class="type">DemoConsole</span>.<span class="type">Trunk</span>]</span><br><span class="line"><span class="type">Optional</span>(<span class="string">"country"</span>) : <span class="type">Optional</span>(<span class="string">"China"</span>)</span><br><span class="line"><span class="type">Optional</span>(<span class="string">"turnover"</span>) : <span class="type">Optional</span>(<span class="number">1.23457e</span>+<span class="number">08</span>)</span><br></pre></td></tr></table></figure></p>
+<p>可以看出，和第一篇文章一样，打印出个每个属性和其值。不同的是，对于自定义对象，不能自动打出里面的属性内容。</p>
+<p>在利用Swift的反射来改进BaseModel之前，让我们来看看Mirror里面都有什么东西吧<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">init</span>(reflecting subject: <span class="type">Any</span>) <span class="comment">//构造器</span></span><br><span class="line">    </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">typealias</span> <span class="type">Child</span> = (label: <span class="type">String</span>?, value: <span class="type">Any</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">typealias</span> <span class="type">Children</span> = <span class="type">AnyForwardCollection</span>&lt;<span class="type">Child</span>&gt;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">DisplayStyle</span> </span>&#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="type">Struct</span></span><br><span class="line">    <span class="keyword">case</span> <span class="type">Class</span></span><br><span class="line">    <span class="keyword">case</span> <span class="type">Enum</span></span><br><span class="line">    <span class="keyword">case</span> <span class="type">Tuple</span></span><br><span class="line">    <span class="keyword">case</span> <span class="type">Optional</span></span><br><span class="line">    <span class="keyword">case</span> <span class="type">Collection</span></span><br><span class="line">    <span class="keyword">case</span> <span class="type">Dictionary</span></span><br><span class="line">    <span class="keyword">case</span> <span class="type">Set</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">AncestorRepresentation</span> </span>&#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="type">Generated</span> <span class="comment">/// 为所有 ancestor class 生成默认 mirror。</span></span><br><span class="line">    <span class="keyword">case</span> <span class="type">Customized</span>(() -&gt; <span class="type">Mirror</span>)<span class="comment">/// 使用最近的 ancestor 的 customMirror() 实现来给它创建一个 mirror。</span></span><br><span class="line">    <span class="keyword">case</span> <span class="type">Suppressed</span> <span class="comment">/// 禁用所有 ancestor class 的行为。Mirror 的 superclassMirror() 返回值为 nil。</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> subjectType: <span class="type">Any</span>.<span class="type">Type</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> children: <span class="type">Children</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">let</span> displayStyle: <span class="type">Mirror</span>.<span class="type">DisplayStyle</span>?</span><br><span class="line"><span class="preprocessor">@warn_unused_result</span></span><br><span class="line"><span class="keyword">public</span> <span class="func"><span class="keyword">func</span> <span class="title">superclassMirror</span><span class="params">()</span></span> -&gt; <span class="type">Mirror</span>?</span><br></pre></td></tr></table></figure></p>
+<p>一个一个来看</p>
+<ul>
+<li>第一个是构造器，它传入的参数类型是Any类型。说明Mirror支持对任意类型的反射。</li>
+<li>下面定义了两个typealias，分别是Child和Children，Child是个元组(label: String?, value: Any)，label是指属性名，是个可空值，因为不是所有支持反射的数据结构都包含有名字的子节点。 struct 会以属性的名字做为 label，但是 Collection 只有下标，没有名字。Tuple 同样也可能没有给它们的条目指定名字。是Value是个Any，也就是说属性可以是任意类型。</li>
+<li>DisplayStyle是个enum，它会告诉你对象的类型。这里面其他囊括了所有Cocoa的类型，唯一的例外是个Closure，或者Block。</li>
+<li>AncestorRepresentation也是个enum，这个enum用来定义被反射的对象的父类应该如何被反射。也就是说，这只应用于 class 类型的对象。默认情况（正如你所见）下 Swift 会为每个父类生成额外的 mirror。然而，如果你需要做更复杂的操作，你可以使用 AncestorRepresentation enum 来定义父类被反射的细节。具体都有什么样的类型看上面的注释。<br>+subjectType是个Any.Type，从上面打印出来的东西可以看出，它应该是AnyClass的名称,不同的是AnyClass是AnyObject.Type.后面可以写代码验证</li>
+<li>children是个AnyForwardCollection&lt;(label: String?, value: Any)&gt;类型，也就是个Child的集合。AnyForwardCollection是个什么玩意呢，Apple是这么说的<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// A type-erased wrapper over any collection with indices that</span></span><br><span class="line"><span class="comment">/// support forward traversal.</span></span><br><span class="line"><span class="comment">///</span></span><br><span class="line"><span class="comment">/// Forwards operations to an arbitrary underlying collection having the</span></span><br><span class="line"><span class="comment">/// same `Element` type, hiding the specifics of the underlying</span></span><br><span class="line"><span class="comment">/// `CollectionType`.</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这个确实有点难以理解，我试着翻译过来：一个类型可擦除的包装器，适用于任何支持向前遍历的集合，前向遍历操作任意一个有着相同“元素”类型的底层集合，隐藏底层集合类型的细节。翻译过来还是不明白什么意思，也许需要大神指点，我只好把它看作一个可以遍历普通集合算了。</p>
+<ul>
+<li>displayStyle是DisplayStyle enum，表示反射的对象属于什么样的类型</li>
+<li>superclassMirror()是获取父类的Mirror，如果没有父类，则为nil</li>
+</ul>
+<p>下面看看用各种类型来看看Mirror的各个属性可以打印出什么<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">Mirror</span></span>&#123;</span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">printMirror</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">"mirror:<span class="subst">\(<span class="keyword">self</span>)</span> type:<span class="subst">\(<span class="keyword">self</span>.subjectType)</span> displayStyle <span class="subst">\(<span class="keyword">self</span>.displayStyle)</span> superClassMirror <span class="subst">\(<span class="keyword">self</span>.superclassMirror()</span>) "</span>)</span><br><span class="line">        <span class="keyword">for</span> (key,value) <span class="keyword">in</span> <span class="keyword">self</span>.children&#123;</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">"<span class="subst">\(key)</span> : <span class="subst">\(value)</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> s = &#123;(i:<span class="type">Int</span>) -&gt; <span class="type">Int</span> <span class="keyword">in</span>  <span class="keyword">return</span> i + i &#125;</span><br><span class="line"><span class="keyword">let</span> mir = <span class="type">Mirror</span>(reflecting: s)</span><br><span class="line">mir.printMirror()</span><br><span class="line"><span class="keyword">typealias</span> item = (key:<span class="type">String</span>,value:<span class="type">AnyObject</span>)</span><br><span class="line"><span class="keyword">let</span> a:item = (<span class="string">"111"</span>,<span class="number">222</span>)</span><br><span class="line"><span class="keyword">let</span> mirty = <span class="type">Mirror</span>(reflecting: a)</span><br><span class="line">mirty.printMirror()</span><br><span class="line"><span class="type">Mirror</span>(reflecting: <span class="string">"1"</span>).printMirror()</span><br><span class="line"><span class="type">Mirror</span>(reflecting: <span class="number">1.1</span>).printMirror()</span><br><span class="line"><span class="type">Mirror</span>(reflecting: <span class="type">NSData</span>()).printMirror()</span><br><span class="line"><span class="type">Mirror</span>(reflecting: <span class="type">NSNull</span>()).printMirror()</span><br><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">week</span>:<span class="title">Int</span></span>&#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="type">Mon</span> = <span class="number">1</span>,<span class="type">Thu</span>,<span class="type">Wed</span>,<span class="type">Tur</span>,<span class="type">Fri</span>,<span class="type">Sat</span>,<span class="type">Sun</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="type">Mirror</span>(reflecting: week.<span class="type">Fri</span>).printMirror()</span><br><span class="line"></span><br><span class="line"><span class="comment">//打印结果</span></span><br><span class="line">**mirror:<span class="type">Mirror</span> <span class="keyword">for</span> <span class="type">Int</span> -&gt; <span class="type">Int</span> type:<span class="type">Int</span> -&gt; <span class="type">Int</span> displayStyle <span class="literal">nil</span> superClassMirror <span class="literal">nil</span> </span><br><span class="line">mirror:<span class="type">Mirror</span> <span class="keyword">for</span> (<span class="type">String</span>, <span class="type">AnyObject</span>) type:(<span class="type">String</span>, <span class="type">AnyObject</span>) displayStyle <span class="type">Optional</span>(<span class="type">Swift</span>.<span class="type">Mirror</span>.<span class="type">DisplayStyle</span>.<span class="type">Tuple</span>) superClassMirror <span class="literal">nil</span> </span><br><span class="line"><span class="type">Optional</span>(<span class="string">".0"</span>) : <span class="number">111</span></span><br><span class="line"><span class="type">Optional</span>(<span class="string">".1"</span>) : <span class="number">222</span></span><br><span class="line">mirror:<span class="type">Mirror</span> <span class="keyword">for</span> <span class="type">String</span> type:<span class="type">String</span> displayStyle <span class="literal">nil</span> superClassMirror <span class="literal">nil</span> </span><br><span class="line">mirror:<span class="type">Mirror</span> <span class="keyword">for</span> <span class="type">Double</span> type:<span class="type">Double</span> displayStyle <span class="literal">nil</span> superClassMirror <span class="literal">nil</span> </span><br><span class="line">mirror:<span class="type">Mirror</span> <span class="keyword">for</span> <span class="type">NSNull</span> type:<span class="type">NSNull</span> displayStyle <span class="type">Optional</span>(<span class="type">Swift</span>.<span class="type">Mirror</span>.<span class="type">DisplayStyle</span>.<span class="type">Class</span>) superClassMirror <span class="type">Optional</span>(<span class="type">Mirror</span> <span class="keyword">for</span> <span class="type">NSObject</span>) </span><br><span class="line">mirror:<span class="type">Mirror</span> <span class="keyword">for</span> _NSZeroData type:_NSZeroData displayStyle <span class="type">Optional</span>(<span class="type">Swift</span>.<span class="type">Mirror</span>.<span class="type">DisplayStyle</span>.<span class="type">Class</span>) superClassMirror <span class="type">Optional</span>(<span class="type">Mirror</span> <span class="keyword">for</span> <span class="type">NSData</span>) </span><br><span class="line">mirror:<span class="type">Mirror</span> <span class="keyword">for</span> week type:week displayStyle <span class="type">Optional</span>(<span class="type">Swift</span>.<span class="type">Mirror</span>.<span class="type">DisplayStyle</span>.<span class="type">Enum</span>) superClassMirror <span class="literal">nil</span>**</span><br></pre></td></tr></table></figure></p>
+<p>Colsure或者Block的displayStyle是nil，而typealias则转化成了正确的类型。其他所有类型都正确在获取并打印出来了。</p>
+<p>Mirror类还有一个些其他的构造器，还有一些扩展，可能一些特殊场合会用到，这里就省略了，总之来说，Swift的反射可以用在以下场景</p>
+<ul>
+<li>遍历Turple</li>
+<li>对类做分析，获取属性和值</li>
+<li>运行时分析对象的一至性</li>
+</ul>
+<p>总体来说，因为功能比较弱，使用场景也比较窄。远远比不上Objc的Runtime，更别说Java和C#了。<br>但是相对于Objc的Runtime，Swift的反射是可以获取全部属性的，而且API相对于Objc也简单许多。有时侯，可以用来代替Runtime中获取所有属性名的方法<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="func"><span class="keyword">func</span> <span class="title">getSelfPropertySwift</span><span class="params">()</span></span>-&gt;[<span class="type">String</span>]&#123;</span><br><span class="line">    <span class="keyword">var</span> selfProperties = [<span class="type">String</span>]()</span><br><span class="line">    <span class="keyword">let</span> mir = <span class="type">Mirror</span>(reflecting: <span class="keyword">self</span>.<span class="keyword">dynamicType</span>.<span class="keyword">init</span>())</span><br><span class="line">    <span class="keyword">for</span> (key,<span class="number">_</span>) <span class="keyword">in</span> mir.children&#123;</span><br><span class="line">        selfProperties.append(key!)<span class="comment">//这里可以获取所有的属性，但是只有和Objc相容的类型才能做KVC操作</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> selfProperties</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以用这个来重写description方法,代码看起来要简洁不少。但是—–这个根本就没法用。<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> dict = [<span class="type">String</span>:<span class="type">AnyObject</span>]()</span><br><span class="line">    <span class="keyword">let</span> mir = <span class="type">Mirror</span>(reflecting: <span class="keyword">self</span>.<span class="keyword">dynamicType</span>.<span class="keyword">init</span>())</span><br><span class="line">    <span class="keyword">for</span> (key,value) <span class="keyword">in</span> mir.children&#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> obj = value <span class="keyword">as</span>? <span class="type">AnyObject</span>&#123; <span class="comment">//注意字典只能保存AnyObject类型。</span></span><br><span class="line">          dict[key!] = obj</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">return</span> <span class="string">"<span class="subst">\(<span class="keyword">self</span>.<span class="keyword">dynamicType</span>)</span>:<span class="subst">\(dict)</span>"</span></span><br></pre></td></tr></table></figure></p>
+<p>Mirror中的children无法识别复杂类型，对于自定义类型，或者是没有赋值的可空类型，获取的value是nil，这样也就无法像第一篇文章中那样正确地打印出各种个属性名和值，我的如意算盘落空了。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>就目前而言，怪异的API，功能的缺失，让Swift的反射功能难堪大用。我们之所以要用反射，就是要利用基于反射动态编程的特性，实现在运行时动态地给属性赋值，动态调用方法等。不知道是Apple认为Objc的Runtime功能已经足够强大好用，还是认为Swift的安全更重要，目前在Swift2.2版本反射还是根本没法用。我希望未来Apple可以好好的加强Swift的反射，参考一下C#和Java的机制，设计出更强大更好用的反射功能</p>
+<p>打造强大的BaseModel系列文章到此就完结了，在写这些文章的过程中，我发现自己对iOS的Runtime有了更深的理解，也明白了Swift和Objc是怎么相互操作的，可见写文章的最大收获还是自己。所以我还会写更多的iOS开发技巧系列文章，请大家期待。</p>
+<div class="ds-thread" data-thread-key="2016/03/14/ios-essay-grand-model-no4" data-title="ios-essay-grand-model-no4" data-url="http://stanhu.cc/2016/03/14/ios-essay-grand-model-no4"></div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS开发/" rel="tag">#iOS开发</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/14/ios-essay-grand-model-no3/" rel="next" title="iOS开发技巧系列---打造强大的BaseModel(篇三：让Model实现自动归档)">
+                <i class="fa fa-chevron-left"></i> iOS开发技巧系列---打造强大的BaseModel(篇三：让Model实现自动归档)
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"syanhu"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- 多说公共JS代码 end -->
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="Stan Hu" />
+          <p class="site-author-name" itemprop="name">Stan Hu</p>
+          <p class="site-description motion-element" itemprop="description">学习总结，思考感悟，求知奋斗</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">10</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+          
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/DuckDeck" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/stan-hu" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> ZhiHu
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/users/ba6dc2f48796/latest_articles" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> JianShu
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#iOS-Runtime目前存在的问题"><span class="nav-number">1.</span> <span class="nav-text">iOS Runtime目前存在的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是反射"><span class="nav-number">2.</span> <span class="nav-text">什么是反射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Swift的反射"><span class="nav-number">3.</span> <span class="nav-text">Swift的反射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Stan Hu</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'syanhu';
+      var disqus_identifier = '2016/03/14/ios-essay-grand-model-no4/';
+      var disqus_title = 'iOS开发技巧系列---打造强大的BaseModel(篇四：使用Swift反射)';
+      var disqus_url = 'http://stanhu.cc/2016/03/14/ios-essay-grand-model-no4/';
+
+      function run_disqus_script(disqus_script){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+      
+        run_disqus_script('embed.js');
+      
+    </script>
+  
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>

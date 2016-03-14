@@ -1,0 +1,766 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS开发," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="本文是iOS开发技巧系列—打造强大的BaseModel中的篇三，前面二篇文章都可以看我有主页面里面找到，这里就不贴链接了。这篇文章是打造强大的BaseModel系列文章中的究极篇，相对于让Model实现自我描述和自动转换，让Model实现自动归档的难度大得多。我相信能够好好看完这三篇文章的人，绝对是有大收获的。另外，些文章不适合新手，只适合有一定有Swift开发经验的人。
+
+什么是iOS的归档归档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS开发技巧系列---打造强大的BaseModel(篇三：让Model实现自动归档)">
+<meta property="og:url" content="http://stanhu.cc/2016/03/14/ios-essay-grand-model-no3/index.html">
+<meta property="og:site_name" content="智慧与力量 | 求知者">
+<meta property="og:description" content="本文是iOS开发技巧系列—打造强大的BaseModel中的篇三，前面二篇文章都可以看我有主页面里面找到，这里就不贴链接了。这篇文章是打造强大的BaseModel系列文章中的究极篇，相对于让Model实现自我描述和自动转换，让Model实现自动归档的难度大得多。我相信能够好好看完这三篇文章的人，绝对是有大收获的。另外，些文章不适合新手，只适合有一定有Swift开发经验的人。
+
+什么是iOS的归档归档">
+<meta property="og:updated_time" content="2016-03-14T12:05:48.660Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS开发技巧系列---打造强大的BaseModel(篇三：让Model实现自动归档)">
+<meta name="twitter:description" content="本文是iOS开发技巧系列—打造强大的BaseModel中的篇三，前面二篇文章都可以看我有主页面里面找到，这里就不贴链接了。这篇文章是打造强大的BaseModel系列文章中的究极篇，相对于让Model实现自我描述和自动转换，让Model实现自动归档的难度大得多。我相信能够好好看完这三篇文章的人，绝对是有大收获的。另外，些文章不适合新手，只适合有一定有Swift开发经验的人。
+
+什么是iOS的归档归档">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"always"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> iOS开发技巧系列---打造强大的BaseModel(篇三：让Model实现自动归档) | 智慧与力量 | 求知者 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">智慧与力量 | 求知者</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">创作，英语，编程，学习......</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-画廊">
+          <a href="/gal/g.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-question-circle fa-fw"></i> <br />
+            
+            menu.画廊
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                iOS开发技巧系列---打造强大的BaseModel(篇三：让Model实现自动归档)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-03-14T20:01:00+08:00" content="2016-03-14">
+              2016-03-14
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/03/14/ios-essay-grand-model-no3/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/03/14/ios-essay-grand-model-no3/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>本文是iOS开发技巧系列—打造强大的BaseModel中的篇三，前面二篇文章都可以看我有主页面里面找到，这里就不贴链接了。这篇文章是打造强大的BaseModel系列文章中的究极篇，相对于让Model实现自我描述和自动转换，让Model实现自动归档的难度大得多。我相信能够好好看完这三篇文章的人，绝对是有大收获的。另外，些文章不适合新手，只适合有一定有Swift开发经验的人。</p>
+</blockquote>
+<h3 id="什么是iOS的归档"><a href="#什么是iOS的归档" class="headerlink" title="什么是iOS的归档"></a>什么是iOS的归档</h3><p>归档–NSKeyedArchiver，是iOS开发中基本的数据存储方式之一，和其他的数据存储方式相比，归档不仅能够存储任意类型的数据，而且使用起来也很简单。归档能将数据处理成NSData的形式，所以很容易以文件的形式保存在APP的沙盒中，而解归和归档相反，它是将保存在APP沙盒的归档文件逆归档，转换成归档前的状态。</p>
+<h3 id="传统的iOS归档方式"><a href="#传统的iOS归档方式" class="headerlink" title="传统的iOS归档方式"></a>传统的iOS归档方式</h3><p>要想让一个自定义对象可以使用归档，必须要让其符合NSCoding协议，<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">protocol</span> <span class="title">NSCoding</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="func"><span class="keyword">func</span> <span class="title">encodeWithCoder</span><span class="params">(aCoder: NSCoder)</span></span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>?(coder aDecoder: <span class="type">NSCoder</span>) <span class="comment">// NS_DESIGNATED_INITIALIZER</span></span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure></p>
+<p>上面的代码是iOS中NSCoding协议的定义。里面包含两个方法，其中一个是构造器。第一个方法<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="func"><span class="keyword">func</span> <span class="title">encodeWithCoder</span><span class="params">(aCoder: NSCoder)</span></span></span><br></pre></td></tr></table></figure></p>
+<p>就是归档方法，它是为了告诉NSKeyedArchiver对象如何将数据归档成文件的。第二个方法（构造器）<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">init</span>?(coder aDecoder: <span class="type">NSCoder</span>) <span class="comment">// NS_DESIGNATED_INITIALIZER</span></span><br></pre></td></tr></table></figure></p>
+<p>就是解档方法了。它是告诉NSKeyedUnArchiver是如何将归档好的对象解档成原来的数据的<br>下面来看看传统的iOS归档方式，先定义一个类，让其符合NSCoding协议<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoArchiver</span>:<span class="title">GrandModel</span>,<span class="title">NSCoding</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> demoString:<span class="type">String</span>?</span><br><span class="line">    <span class="keyword">var</span> demoInt = <span class="number">100</span></span><br><span class="line">    <span class="keyword">var</span> demoFloat:<span class="type">Float</span> = <span class="number">0.0</span></span><br><span class="line">    <span class="keyword">var</span> demoDate = <span class="type">NSDate</span>()</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">required</span> <span class="keyword">init</span>()&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="preprocessor">@objc</span> <span class="func"><span class="keyword">func</span> <span class="title">encodeWithCoder</span><span class="params">(aCoder: NSCoder)</span></span> &#123;<span class="comment">//归档需要实现的方法</span></span><br><span class="line">        aCoder.encodeObject(demoString, forKey: <span class="string">"demoString"</span>)</span><br><span class="line">        aCoder.encodeInteger(demoInt, forKey: <span class="string">"demoInt"</span>)</span><br><span class="line">        aCoder.encodeFloat(demoFloat, forKey: <span class="string">"demoFloat"</span>)</span><br><span class="line">        aCoder.encodeObject(demoDate, forKey: <span class="string">"demoDate"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="preprocessor">@objc</span> <span class="keyword">required</span> <span class="keyword">init</span>?(coder aDecoder: <span class="type">NSCoder</span>) &#123;<span class="comment">//解档需要实现的构造器</span></span><br><span class="line">        demoString = aDecoder.decodeObjectForKey(<span class="string">"demoString"</span>) <span class="keyword">as</span>? <span class="type">String</span></span><br><span class="line">        demoInt = aDecoder.decodeIntegerForKey(<span class="string">"demoInt"</span>)</span><br><span class="line">        demoFloat = aDecoder.decodeFloatForKey(<span class="string">"demoFloat"</span>)</span><br><span class="line">        demoDate = aDecoder.decodeObjectForKey(<span class="string">"demoDate"</span>) <span class="keyword">as</span>! <span class="type">NSDate</span> <span class="comment">//存在强制转换情况</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们需要在正确地重写这两个方法。这里面最需要注意的点有两个，一是不要把数据类型搞错。二是key名不要弄错了。然后下面开始测试</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">     <span class="keyword">let</span> demoTest = <span class="type">DemoArchiver</span>()</span><br><span class="line">     demoTest.demoString = <span class="string">"ABCDEFG"</span></span><br><span class="line">     demoTest.demoFloat = <span class="number">11.11</span></span><br><span class="line">     <span class="built_in">print</span>(demoTest)</span><br><span class="line">     <span class="keyword">let</span> a = <span class="type">NSKeyedArchiver</span>.archivedDataWithRootObject(demoTest)</span><br><span class="line">     <span class="keyword">let</span> b = <span class="type">NSKeyedUnarchiver</span>.unarchiveObjectWithData(a)</span><br><span class="line">     <span class="built_in">print</span>(b)</span><br><span class="line">     <span class="comment">//打印结果</span></span><br><span class="line">     **<span class="type">DemoArchiver</span>:[<span class="string">"demoInt"</span>: <span class="number">100</span>, <span class="string">"demoString"</span>: <span class="type">ABCDEFG</span>, <span class="string">"demoFloat"</span>: <span class="number">11.11</span>, <span class="string">"demoDate"</span>: <span class="number">2016</span>-<span class="number">03</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">03</span>:<span class="number">17</span> +<span class="number">0000</span>]</span><br><span class="line"><span class="type">Optional</span>(<span class="type">DemoArchiver</span>:[<span class="string">"demoInt"</span>: <span class="number">100</span>, <span class="string">"demoString"</span>: <span class="type">ABCDEFG</span>, <span class="string">"demoFloat"</span>: <span class="number">11.11</span>, <span class="string">"demoDate"</span>: <span class="number">2016</span>-<span class="number">03</span>-<span class="number">09</span> <span class="number">13</span>:<span class="number">03</span>:<span class="number">17</span> +<span class="number">0000</span>])**</span><br></pre></td></tr></table></figure>
+<p>可见经过归档再解档后的数据又恢复了原样。这里需要说明一下的是，一般是需要把归档后的文件保存在APP的沙盒目录内的，需要使用时再取出来解档。这里为了测试方便就不这么做了。</p>
+<h3 id="传统的iOS归档方式的弊端"><a href="#传统的iOS归档方式的弊端" class="headerlink" title="传统的iOS归档方式的弊端"></a>传统的iOS归档方式的弊端</h3><p>相信大家很容易看出使用传统的iOS归档方式的不足之处，还是和以前一样，需要写太多的重复啰嗦代码了。目前对于Objc语言来说，有一个代码生成器(Accessorizer,见(<a href="http://www.kevincallahan.org/software/accessorizer.html))可以使用，只需要把所有属性放进去，就可以生成所有属性的归档解档方法。遗憾的是Swift目前还没有这种工具可以用(或者有了鈤是我不知道)，只有老实的让每个Model符合NSCoding协议，再写出每个属性的归档&amp;解档方法。其中最让人疼的是有些属性还需要强制转换。而一般情况下一个项目的Model数都超过了两位数，虽然不一定每个Model都需要归档功能，但是如果一个类里面属性太多的话，写起来会让人很郁闷的。" target="_blank" rel="external">http://www.kevincallahan.org/software/accessorizer.html))可以使用，只需要把所有属性放进去，就可以生成所有属性的归档解档方法。遗憾的是Swift目前还没有这种工具可以用(或者有了鈤是我不知道)，只有老实的让每个Model符合NSCoding协议，再写出每个属性的归档&amp;解档方法。其中最让人疼的是有些属性还需要强制转换。而一般情况下一个项目的Model数都超过了两位数，虽然不一定每个Model都需要归档功能，但是如果一个类里面属性太多的话，写起来会让人很郁闷的。</a></p>
+<h3 id="使用RunTime实现自动归档"><a href="#使用RunTime实现自动归档" class="headerlink" title="使用RunTime实现自动归档"></a>使用RunTime实现自动归档</h3><p>如果读者看了我先前的两篇–打造强大的BaseModel文章，脑子了应该可以很快构思出使用RunTime和KVC来实现自动归档的思路。先用RunTime获取Model中所有属性名，再用KVC获取每一个属性的值。再调用encodeWithCoder就能实现归档了。嗯，这种想法不错，下面直接写代码吧。<br>还是和以前一样，先写一个返回该类所有属性名的方法<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="func"><span class="keyword">func</span> <span class="title">getSelfProperty</span><span class="params">()</span></span>-&gt;[<span class="type">String</span>]&#123; <span class="comment">//这里不能用静态方法，因为父类没法获取运行时的子类，只能获取运行时子类的实例</span></span><br><span class="line">     <span class="keyword">var</span> selfProperties = [<span class="type">String</span>]()</span><br><span class="line">     <span class="keyword">let</span> <span class="built_in">count</span>:<span class="type">UnsafeMutablePointer</span>&lt;<span class="type">UInt32</span>&gt; =  <span class="type">UnsafeMutablePointer</span>&lt;<span class="type">UInt32</span>&gt;()</span><br><span class="line">     <span class="keyword">var</span> properties = class_copyPropertyList(<span class="keyword">self</span>.<span class="keyword">dynamicType</span>, <span class="built_in">count</span>)</span><br><span class="line">     <span class="keyword">while</span> properties.memory.debugDescription !=  <span class="string">"0x0000000000000000"</span>&#123;</span><br><span class="line">         <span class="keyword">let</span> t = property_getName(properties.memory)</span><br><span class="line">         <span class="keyword">let</span> n = <span class="type">NSString</span>(<span class="type">CString</span>: t, encoding: <span class="type">NSUTF8StringEncoding</span>)</span><br><span class="line">         selfProperties.append(n! <span class="keyword">as</span> <span class="type">String</span>)</span><br><span class="line">         properties = properties.successor()</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">return</span> selfProperties</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>和先前一样，利用Objc运行时的一系列方法可以从该类获取所有的属性名，下面是测试</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoArchiver</span>:<span class="title">GrandModel</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> demoString:<span class="type">String</span>?</span><br><span class="line">    <span class="keyword">var</span> demoInt = <span class="number">0</span></span><br><span class="line">    <span class="keyword">var</span> demoFloat:<span class="type">Float</span> = <span class="number">0.0</span></span><br><span class="line">    <span class="keyword">var</span> demoDate = <span class="type">NSDate</span>()</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">required</span> <span class="keyword">init</span>()&#123;</span><br><span class="line">        <span class="keyword">super</span>.<span class="keyword">init</span>()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">required</span> <span class="keyword">init</span>?(coder aDecoder: <span class="type">NSCoder</span>) &#123;</span><br><span class="line">        <span class="built_in">fatalError</span>(<span class="string">"init(coder:) has not been implemented"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">print</span>(<span class="type">DemoArchiver</span>().getSelfProperty())</span><br><span class="line"><span class="comment">//打印出**["demoString", "demoInt", "demoFloat", "demoDate"]**</span></span><br></pre></td></tr></table></figure>
+<p>下面来让GrandModel实现NSCoding协议，注意，实现NSCoding协议不能使用extension，因为指定构造器不能声明在extension中<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GrandModel</span>:<span class="title">NSObject</span>,<span class="title">NSCoding</span></span>&#123;</span><br><span class="line">    <span class="comment">//归档方法</span></span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">encodeWithCoder</span><span class="params">(aCoder: NSCoder)</span></span> &#123;</span><br><span class="line">        <span class="keyword">let</span> item = <span class="keyword">self</span>.<span class="keyword">dynamicType</span>.<span class="keyword">init</span>()</span><br><span class="line">        <span class="keyword">let</span> properties = item.getSelfProperty()</span><br><span class="line">        <span class="keyword">for</span> propertyName <span class="keyword">in</span> properties&#123;</span><br><span class="line">            <span class="keyword">let</span> value = <span class="keyword">self</span>.valueForKey(propertyName)</span><br><span class="line">            aCoder.encodeObject(value, forKey: propertyName)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//解档方法</span></span><br><span class="line">    <span class="keyword">required</span> <span class="keyword">init</span>?(coder aDecoder: <span class="type">NSCoder</span>) &#123;</span><br><span class="line">        <span class="keyword">super</span>.<span class="keyword">init</span>()</span><br><span class="line">        <span class="keyword">let</span> item = <span class="keyword">self</span>.<span class="keyword">dynamicType</span>.<span class="keyword">init</span>()</span><br><span class="line">        <span class="keyword">let</span> properties = item.getSelfProperty()</span><br><span class="line">        <span class="keyword">for</span> propertyName <span class="keyword">in</span> properties&#123;</span><br><span class="line">            <span class="keyword">let</span> value = aDecoder.decodeObjectForKey(propertyName)</span><br><span class="line">            <span class="keyword">self</span>.setValue(value, forKey: propertyName)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>没想到这么快就写好了，看起来也不难嘛，但是实际上这里这里存在一个显而易见的问题，就是归档方法中需要根据属性的类型调用不同的encode(属性类型)方法，本文的第一个例子里很清楚，对于Int类型的属性，需要调用aCoder.encodeInteger方法，Float和Double也不一样。如果统一使用 aCoder.encodeObject方法，就会造成数据类型丢失，</p>
+<h3 id="测试使用RunTime实现自动归档是否有效"><a href="#测试使用RunTime实现自动归档是否有效" class="headerlink" title="测试使用RunTime实现自动归档是否有效"></a>测试使用RunTime实现自动归档是否有效</h3><p>这里可以测试一下。还是用文章开头的例子的哪个类，只不过需要去掉里面其他所有的方法只保留属性,并且添加了一些属性用来测试<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoArchiver</span>:<span class="title">GrandModel</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> demoString:<span class="type">String</span>?</span><br><span class="line">    <span class="keyword">var</span> demoInt = <span class="number">10</span></span><br><span class="line">    <span class="keyword">var</span> demoFloat:<span class="type">Float</span> = <span class="number">11.0</span></span><br><span class="line">    <span class="keyword">var</span> demoDouble:<span class="type">Double</span> = <span class="number">22.0</span></span><br><span class="line">    <span class="keyword">var</span> demoDate = <span class="type">NSDate</span>()</span><br><span class="line">    <span class="keyword">var</span> demoRect = <span class="type">CGRect</span>(x: <span class="number">1</span>, y: <span class="number">1</span>, width: <span class="number">1</span>, height: <span class="number">1</span>)</span><br><span class="line">&#125;</span><br><span class="line">   <span class="keyword">let</span> demoTest = <span class="type">DemoArchiver</span>()</span><br><span class="line">   demoTest.demoString = <span class="string">"ABCDEFG"</span></span><br><span class="line">   demoTest.demoFloat = <span class="number">11.11</span></span><br><span class="line">   <span class="built_in">print</span>(demoTest)</span><br><span class="line">   <span class="keyword">let</span> a = <span class="type">NSKeyedArchiver</span>.archivedDataWithRootObject(demoTest)</span><br><span class="line">   <span class="keyword">let</span> b = <span class="type">NSKeyedUnarchiver</span>.unarchiveObjectWithData(a)</span><br><span class="line">   <span class="built_in">print</span>(b)</span><br><span class="line">   <span class="comment">//打印结果为</span></span><br><span class="line">   **<span class="type">DemoArchiver</span>:[<span class="string">"demoDouble"</span>: <span class="number">22</span>, <span class="string">"demoInt"</span>: <span class="number">10</span>, <span class="string">"demoRect"</span>: <span class="type">NSRect</span>: &#123;&#123;<span class="number">1</span>, <span class="number">1</span>&#125;, &#123;<span class="number">1</span>, <span class="number">1</span>&#125;&#125;, <span class="string">"demoString"</span>: <span class="type">ABCDEFG</span>, <span class="string">"demoFloat"</span>: <span class="number">11.11</span>, <span class="string">"demoDate"</span>: <span class="number">2016</span>-<span class="number">03</span>-<span class="number">12</span> <span class="number">07</span>:<span class="number">57</span>:<span class="number">57</span> +<span class="number">0000</span>]</span><br><span class="line"><span class="type">Optional</span>(<span class="type">DemoArchiver</span>:[<span class="string">"demoDouble"</span>: <span class="number">22</span>, <span class="string">"demoInt"</span>: <span class="number">10</span>, <span class="string">"demoRect"</span>: <span class="type">NSRect</span>: &#123;&#123;<span class="number">1</span>, <span class="number">1</span>&#125;, &#123;<span class="number">1</span>, <span class="number">1</span>&#125;&#125;, <span class="string">"demoString"</span>: <span class="type">ABCDEFG</span>, <span class="string">"demoFloat"</span>: <span class="number">11.11</span>, <span class="string">"demoDate"</span>: <span class="number">2016</span>-<span class="number">03</span>-<span class="number">12</span> <span class="number">07</span>:<span class="number">57</span>:<span class="number">57</span> +<span class="number">0000</span>])**</span><br></pre></td></tr></table></figure></p>
+<p>实际上测试结果出乎我意料之外，非常完美，所有属性都成功地归档保存下来，解档后数据没有出现丢失的情况。对此我的分析是：这一切都是KVC的功劳。因为KVC取出的属性都是为AnyObject？类型，那么归档也就可以很方便地调用aCoder.encodeObject这个方法，所以数据以AnyObject类型保存。取出来时正好相反，用aDecoder.decodeObjectForKey这个角档方法取出来的数据类型都是AnyObject？类型的。然后KVC在组属性赋值并不需要知道每个属性是什么样的数据类型，都可以正确地赋值。难道事情就这样解决了吗？我们来看看下个测试用例<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoArchiver</span>:<span class="title">GrandModel</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> demoString:<span class="type">String</span>?</span><br><span class="line">    <span class="keyword">var</span> demoInt = <span class="number">10</span></span><br><span class="line">    <span class="keyword">var</span> demoFloat:<span class="type">Float</span>?</span><br><span class="line">    <span class="keyword">var</span> demoDouble:<span class="type">Double</span> = <span class="number">12</span></span><br><span class="line">    <span class="keyword">var</span> demoDate:<span class="type">NSDate</span>?</span><br><span class="line">&#125;</span><br><span class="line">   <span class="keyword">let</span> demoTest = <span class="type">DemoArchiver</span>()</span><br><span class="line">   demoTest.demoFloat = <span class="number">11.11</span></span><br><span class="line">   <span class="built_in">print</span>(demoTest)</span><br><span class="line">   <span class="keyword">let</span> a = <span class="type">NSKeyedArchiver</span>.archivedDataWithRootObject(demoTest)</span><br><span class="line">   <span class="keyword">let</span> b = <span class="type">NSKeyedUnarchiver</span>.unarchiveObjectWithData(a)</span><br><span class="line">   <span class="built_in">print</span>(b)</span><br><span class="line">   <span class="comment">//打印结果为</span></span><br><span class="line">   **<span class="type">DemoArchiver</span>:[<span class="string">"demoDouble"</span>: <span class="number">12</span>, <span class="string">"demoInt"</span>: <span class="number">10</span>, <span class="string">"demoString"</span>: <span class="literal">nil</span>, <span class="string">"demoDate"</span>: <span class="literal">nil</span>]</span><br><span class="line"><span class="type">Optional</span>(<span class="type">DemoArchiver</span>:[<span class="string">"demoDouble"</span>: <span class="number">12</span>, <span class="string">"demoInt"</span>: <span class="number">10</span>, <span class="string">"demoString"</span>: <span class="literal">nil</span>, <span class="string">"demoDate"</span>: <span class="literal">nil</span>])**</span><br></pre></td></tr></table></figure></p>
+<p>结果比预料中好了很多，nil的属性都可以正确打印出来。但是和以前一样，demoFloat:Float?这个属性又丢失了，这是很正常的，因为Objc不支持这种数据类型。读过我这系列文章的读者都可以明白。<br>那么如果属性类型是其他对象，或者是Array和字典类型呢?自动归档还能正常工作吗？答案是肯定的，只要该对象(Array或者Dict里保存的对象)都继承于GrandModel,都可以实现自动归档解档。<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoArchiver</span>:<span class="title">GrandModel</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> demoString:<span class="type">String</span>?</span><br><span class="line">    <span class="keyword">var</span> demoInt = <span class="number">10</span></span><br><span class="line">    <span class="keyword">var</span> demoFloat:<span class="type">Float</span>?</span><br><span class="line">    <span class="keyword">var</span> demoDouble:<span class="type">Double</span> = <span class="number">12</span></span><br><span class="line">    <span class="keyword">var</span> demoDate:<span class="type">NSDate</span>?</span><br><span class="line">    <span class="keyword">var</span> demoClass:demoArc?</span><br><span class="line">    <span class="keyword">var</span> demoArray:[demoArc]?</span><br><span class="line">    <span class="keyword">var</span> demoDict:[<span class="type">String</span>:demoArc]?</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">demoArc</span>:<span class="title">GrandModel</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> daString:<span class="type">String</span>?</span><br><span class="line">    <span class="keyword">var</span> daInt:<span class="type">Int</span> = <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//下面测试</span></span><br><span class="line">        <span class="keyword">let</span> demoTest = <span class="type">DemoArchiver</span>()</span><br><span class="line">        demoTest.demoFloat = <span class="number">11.11</span></span><br><span class="line">        demoTest.demoClass = demoArc()</span><br><span class="line">        demoTest.demoClass?.daInt = <span class="number">8</span></span><br><span class="line">        demoTest.demoClass?.daString = <span class="string">"demoArc"</span></span><br><span class="line">        <span class="keyword">let</span> a1 = demoArc()</span><br><span class="line">        <span class="keyword">let</span> a2 = demoArc()</span><br><span class="line">        a1.daString = <span class="string">"a1"</span></span><br><span class="line">        a1.daInt = <span class="number">1</span></span><br><span class="line">        a2.daInt = <span class="number">2</span></span><br><span class="line">        a2.daString = <span class="string">"a2"</span></span><br><span class="line">        demoTest.demoArray = [a1,a2]</span><br><span class="line">        demoTest.demoDict  = [<span class="string">"demo1"</span>:a1,<span class="string">"demo2"</span>:a2]</span><br><span class="line">        <span class="built_in">print</span>(demoTest)</span><br><span class="line">        <span class="keyword">let</span> a = <span class="type">NSKeyedArchiver</span>.archivedDataWithRootObject(demoTest)</span><br><span class="line">        <span class="keyword">let</span> b = <span class="type">NSKeyedUnarchiver</span>.unarchiveObjectWithData(a)</span><br><span class="line">        <span class="built_in">print</span>(b)</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//打印结果</span></span><br><span class="line">        **<span class="type">DemoArchiver</span>:[<span class="string">"demoDouble"</span>: <span class="number">12</span>, <span class="string">"demoInt"</span>: <span class="number">10</span>, <span class="string">"demoClass"</span>: demoArc:[<span class="string">"daString"</span>: demoArc, <span class="string">"daInt"</span>: <span class="number">8</span>], <span class="string">"demoArray"</span>: (</span><br><span class="line">    <span class="string">"demoArc:[\"daString\": a1, \"daInt\": 1]"</span>,</span><br><span class="line">    <span class="string">"demoArc:[\"daString\": a2, \"daInt\": 2]"</span></span><br><span class="line">), <span class="string">"demoDict"</span>: &#123;</span><br><span class="line">    demo1 = <span class="string">"demoArc:[\"daString\": a1, \"daInt\": 1]"</span>;</span><br><span class="line">    demo2 = <span class="string">"demoArc:[\"daString\": a2, \"daInt\": 2]"</span>;</span><br><span class="line">&#125;, <span class="string">"demoDate"</span>: <span class="literal">nil</span>, <span class="string">"demoString"</span>: <span class="literal">nil</span>]</span><br><span class="line"></span><br><span class="line"><span class="type">Optional</span>(<span class="type">DemoArchiver</span>:[<span class="string">"demoDouble"</span>: <span class="number">12</span>, <span class="string">"demoInt"</span>: <span class="number">10</span>, <span class="string">"demoClass"</span>: demoArc:[<span class="string">"daString"</span>: demoArc, <span class="string">"daInt"</span>: <span class="number">8</span>], <span class="string">"demoArray"</span>: (</span><br><span class="line">    <span class="string">"demoArc:[\"daString\": a1, \"daInt\": 1]"</span>,</span><br><span class="line">    <span class="string">"demoArc:[\"daString\": a2, \"daInt\": 2]"</span></span><br><span class="line">), <span class="string">"demoDict"</span>: &#123;</span><br><span class="line">    demo1 = <span class="string">"demoArc:[\"daString\": a1, \"daInt\": 1]"</span>;</span><br><span class="line">    demo2 = <span class="string">"demoArc:[\"daString\": a2, \"daInt\": 2]"</span>;</span><br><span class="line">&#125;, <span class="string">"demoDate"</span>: <span class="literal">nil</span>, <span class="string">"demoString"</span>: <span class="literal">nil</span>])**</span><br></pre></td></tr></table></figure></p>
+<p>结果完全符合预期。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>让Model自动归档是iOS Runtime和KVC强大威力的又一次体现。这个组合就像一把锋利的尖刀，可以准确高效地解决问题，避免写很多重复的代码。缺点就是效率比正常代码要低一点，但是我认为这完全是可以接受的。这三篇文章所有的相关代码都可以在我的Github里面找到<a href="https://github.com/DuckDeck/GrandModel" target="_blank" rel="external">My Github DuckDeck</a>,你们读者能给个Star.</p>
+<div class="ds-thread" data-thread-key="2016/03/14/ios-essay-grand-model-no3" data-title="ios-essay-grand-model-no3" data-url="http://stanhu.cc/2016/03/14/ios-essay-grand-model-no3"></div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS开发/" rel="tag">#iOS开发</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/07/iOS开发技巧系列-打造强大的BaseModel-篇二：让Model实现自动映射/" rel="next" title="iOS开发技巧系列---打造强大的BaseModel(篇二：让Model实现自动映射--将字典转化成Model)">
+                <i class="fa fa-chevron-left"></i> iOS开发技巧系列---打造强大的BaseModel(篇二：让Model实现自动映射--将字典转化成Model)
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/14/ios-essay-grand-model-no4/" rel="prev" title="iOS开发技巧系列---打造强大的BaseModel(篇四：使用Swift反射)">
+                iOS开发技巧系列---打造强大的BaseModel(篇四：使用Swift反射) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"syanhu"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- 多说公共JS代码 end -->
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="Stan Hu" />
+          <p class="site-author-name" itemprop="name">Stan Hu</p>
+          <p class="site-description motion-element" itemprop="description">学习总结，思考感悟，求知奋斗</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">10</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+          
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/DuckDeck" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/stan-hu" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> ZhiHu
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/users/ba6dc2f48796/latest_articles" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> JianShu
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是iOS的归档"><span class="nav-number">1.</span> <span class="nav-text">什么是iOS的归档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#传统的iOS归档方式"><span class="nav-number">2.</span> <span class="nav-text">传统的iOS归档方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#传统的iOS归档方式的弊端"><span class="nav-number">3.</span> <span class="nav-text">传统的iOS归档方式的弊端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用RunTime实现自动归档"><span class="nav-number">4.</span> <span class="nav-text">使用RunTime实现自动归档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试使用RunTime实现自动归档是否有效"><span class="nav-number">5.</span> <span class="nav-text">测试使用RunTime实现自动归档是否有效</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Stan Hu</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'syanhu';
+      var disqus_identifier = '2016/03/14/ios-essay-grand-model-no3/';
+      var disqus_title = 'iOS开发技巧系列---打造强大的BaseModel(篇三：让Model实现自动归档)';
+      var disqus_url = 'http://stanhu.cc/2016/03/14/ios-essay-grand-model-no3/';
+
+      function run_disqus_script(disqus_script){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+      
+        run_disqus_script('embed.js');
+      
+    </script>
+  
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>
