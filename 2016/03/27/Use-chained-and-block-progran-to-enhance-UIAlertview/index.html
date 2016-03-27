@@ -1,0 +1,760 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS开发," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="UIAlertView是iOS开发过程中最常用的控件之一,是提醒用户做出选择最主要的工具.在iOS8及后来的系统中,苹果更推荐使用UIAlertController来代替UIAlertView.所以本文也并不提倡开发者再使用UIAlertView,本文的目的是探讨如何将原来的给变量赋值和通过Delete来回调的方式变成链式编程风格和通过Block来回调.通过学习对UIAlertView的改造让各位">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS开发技巧系列---使用链式编程和Block来实现UIAlertView">
+<meta property="og:url" content="http://stanhu.cc/2016/03/27/Use-chained-and-block-progran-to-enhance-UIAlertview/index.html">
+<meta property="og:site_name" content="智慧与力量 | 求知者">
+<meta property="og:description" content="UIAlertView是iOS开发过程中最常用的控件之一,是提醒用户做出选择最主要的工具.在iOS8及后来的系统中,苹果更推荐使用UIAlertController来代替UIAlertView.所以本文也并不提倡开发者再使用UIAlertView,本文的目的是探讨如何将原来的给变量赋值和通过Delete来回调的方式变成链式编程风格和通过Block来回调.通过学习对UIAlertView的改造让各位">
+<meta property="og:image" content="http://7xr2ax.com1.z0.glb.clouddn.com/gorgeous%20girl%20for%20essay.jpg">
+<meta property="og:image" content="http://7xr2ax.com1.z0.glb.clouddn.com/GrandCue.png">
+<meta property="og:updated_time" content="2016-03-27T03:41:50.973Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS开发技巧系列---使用链式编程和Block来实现UIAlertView">
+<meta name="twitter:description" content="UIAlertView是iOS开发过程中最常用的控件之一,是提醒用户做出选择最主要的工具.在iOS8及后来的系统中,苹果更推荐使用UIAlertController来代替UIAlertView.所以本文也并不提倡开发者再使用UIAlertView,本文的目的是探讨如何将原来的给变量赋值和通过Delete来回调的方式变成链式编程风格和通过Block来回调.通过学习对UIAlertView的改造让各位">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"always"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> iOS开发技巧系列---使用链式编程和Block来实现UIAlertView | 智慧与力量 | 求知者 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">智慧与力量 | 求知者</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">创作，英语，编程，学习......</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-画廊">
+          <a href="/gal/g.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-question-circle fa-fw"></i> <br />
+            
+            menu.画廊
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                iOS开发技巧系列---使用链式编程和Block来实现UIAlertView
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-03-27T11:35:02+08:00" content="2016-03-27">
+              2016-03-27
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/03/27/Use-chained-and-block-progran-to-enhance-UIAlertview/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/03/27/Use-chained-and-block-progran-to-enhance-UIAlertview/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>UIAlertView是iOS开发过程中最常用的控件之一,是提醒用户做出选择最主要的工具.在iOS8及后来的系统中,苹果更推荐使用UIAlertController来代替UIAlertView.所以本文也并不提倡开发者再使用UIAlertView,<br>本文的目的是探讨如何将原来的给变量赋值和通过Delete来回调的方式变成链式编程风格和通过Block来回调.通过学习对UIAlertView的改造让各位iOS开发者能够学会这种更加便捷的开发方式</p>
+</blockquote>
+<p><img src="http://7xr2ax.com1.z0.glb.clouddn.com/gorgeous%20girl%20for%20essay.jpg" alt=""></p>
+<h3 id="什么是链式编程"><a href="#什么是链式编程" class="headerlink" title="什么是链式编程"></a>什么是链式编程</h3><p>对于有一定开发经验的开发者来说,链式编程并不陌生.有很多知名的开源库使用了这种编程风格,比如大名鼎鼎的JQuery,而iOS库中,Masory和Snapkit也是典型的使用链式编程的例子.<br>大体来说,链式编程就是将多个操作(多行代码)通过某种操作符(通常是点号.)链接成一句的代码.便代码更加紧凑,可读性也更好,降低了代码的重复度.比如以下代码:<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//使用普通的赋值模式</span></span><br><span class="line">txtUserName.placeHolder = <span class="string">"请输入用户名"</span></span><br><span class="line">txtUserName.font = <span class="type">UIFont</span>.systemFont(<span class="number">15</span>)</span><br><span class="line">txtUserName.textColor = <span class="type">UIColor</span>.<span class="type">GrayColor</span>()</span><br><span class="line"><span class="comment">//使用链式编程的语句</span></span><br><span class="line">txtUserName.setPlaceHolder(<span class="string">"请输入用户名"</span>).setFont(<span class="number">15</span>).setTextColor(<span class="type">UIColor</span>.<span class="type">GrayColor</span>())</span><br></pre></td></tr></table></figure></p>
+<p>通过这个例子读者应该可以更清楚的了解什么是链式编程风格.简单来说,链式编程风格要有以下特点</p>
+<ul>
+<li>通常是都是调用一个函数来给属性赋值.也就是说,该函数封装了赋值的语句,还可以在里面加入自己的判断和一些逻辑.</li>
+<li>该函数必须有一个返回值,通常是它本身.也可以是处理后的数据或者对象.</li>
+<li>可以用静态函数作为起始函数,但是后面的全是实例函数.</li>
+<li>可以设定一个最终函数,该函数不返回任何对象,用它来完全最后所有操作.</li>
+</ul>
+<h3 id="链式编程的利弊"><a href="#链式编程的利弊" class="headerlink" title="链式编程的利弊"></a>链式编程的利弊</h3><p>使用链式编程最主要的好处是可以使代码更简洁,写起来一种”爽快”感.设计优秀的链式编程可以大大降低重复的代码,增强逻辑感.不足之处就是对开<br>发者的业务逻辑能力要求较高,同时因为链式编程都是调用函数,所以有可能会造成过深的函数调用栈.稍微影响性能.</p>
+<h3 id="使用Block来回调UIAlertView的Delegate"><a href="#使用Block来回调UIAlertView的Delegate" class="headerlink" title="使用Block来回调UIAlertView的Delegate"></a>使用Block来回调UIAlertView的Delegate</h3><p>iOS开发中有很多回调都是使用Delegate完成的,相信各位读者已经写过很多次了.相对来说,使用Delegate比较繁琐,有时还需要在Delegate里<br>判断是哪个对象的Delegate,优点是运行效率较高.而Block则相反,写起来更直观,开发效率更高.苹果也是逐步使用Block来代替Delegate,iOS<br>8最新的UIViewController里的Action已经全部使用Block来实现.而且Swift里的闭包,匿名函数更上比比皆是.所以大胆地使用Block来代替<br>Delegate和Target-Action吧,苹果会帮我们处理好各种性能问题的.但是需要注意的是retian-circle问题,初识Block很容易出现这种问题.</p>
+<h3 id="使用链式编程和Block来改造UIAlertView"><a href="#使用链式编程和Block来改造UIAlertView" class="headerlink" title="使用链式编程和Block来改造UIAlertView"></a>使用链式编程和Block来改造UIAlertView</h3><p>目前有两种方式可以实现将UIAlertView的Delegate改成Block的回调,一是使用运行时给UIAlertView加上Block属性.二是再写一个新的类继承<br>UIAlertView,本文使用的是第二种方式,写起来更简单一点.</p>
+<h4 id="先定义一个新的类来继承UIAlertView-并且实现UIAlertViewDelegate协议"><a href="#先定义一个新的类来继承UIAlertView-并且实现UIAlertViewDelegate协议" class="headerlink" title="先定义一个新的类来继承UIAlertView,并且实现UIAlertViewDelegate协议"></a>先定义一个新的类来继承UIAlertView,并且实现UIAlertViewDelegate协议</h4><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BlockAlert</span>:<span class="title">UIAlertView</span>,<span class="title">UIAlertViewDelegate</span></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> completion:((buttonIndex:<span class="type">Int</span>,alert:<span class="type">UIAlertView</span>)-&gt;<span class="type">Void</span>)? <span class="comment">//定义各个Block用来回调,其参数名和Delegate回调的函数参数名一至</span></span><br><span class="line">    <span class="keyword">var</span> willDismissBlock:((buttonIndex:<span class="type">Int</span>,alert:<span class="type">UIAlertView</span>)-&gt;<span class="type">Void</span>)?</span><br><span class="line">    <span class="keyword">var</span> didDismissBlock:((buttonIndex:<span class="type">Int</span>,alert:<span class="type">UIAlertView</span>)-&gt;<span class="type">Void</span>)?</span><br><span class="line">    <span class="keyword">var</span> didPresentBlock:((alert:<span class="type">UIAlertView</span>)-&gt;<span class="type">Void</span>)?</span><br><span class="line">    <span class="keyword">var</span> willPresentBlock:((alert:<span class="type">UIAlertView</span>)-&gt;<span class="type">Void</span>)?</span><br><span class="line">    <span class="keyword">var</span> alertWithCancelBlock:((alert:<span class="type">UIAlertView</span>)-&gt;<span class="type">Void</span>)?</span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">init</span>(frame: <span class="type">CGRect</span>) &#123;</span><br><span class="line">        <span class="keyword">super</span>.<span class="keyword">init</span>(frame: frame)</span><br><span class="line">        <span class="keyword">self</span>.delegate = <span class="keyword">self</span> <span class="comment">//将delegate设为自己</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">alertView</span><span class="params">(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int)</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> block = completion&#123; <span class="comment">//最主要的Block,当用户点了按钮时回调,先要判断这个Block存在不?</span></span><br><span class="line">            block(buttonIndex: buttonIndex, alert: alertView)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">alertView</span><span class="params">(alertView: UIAlertView, didDismissWithButtonIndex buttonIndex: Int)</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> block = didDismissBlock&#123;<span class="comment">//其他根据相应的Delegate回调函数依次调用各个Block</span></span><br><span class="line">            block(buttonIndex: buttonIndex, alert: alertView)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">alertView</span><span class="params">(alertView: UIAlertView, willDismissWithButtonIndex buttonIndex: Int)</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> block = willDismissBlock&#123;</span><br><span class="line">            block(buttonIndex: buttonIndex, alert: alertView)</span><br><span class="line">        &#125;   </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 其他几个委托方法也省略了,原理都是一样的</span></span><br><span class="line">    <span class="keyword">required</span> <span class="keyword">init</span>?(coder aDecoder: <span class="type">NSCoder</span>) &#123;</span><br><span class="line">        <span class="built_in">fatalError</span>(<span class="string">"init(coder:) has not been implemented"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>参考上面的代码,总体思路是在构造器里面将委托设为自己,再将Delegate里面所有的函数用Block来实现,Block里面的参数和委托回调的函数参数一至.当有委托函数回调时,先判断这个<br>Block是不是nil,如果不是,则执行该Block<br>接下来的操作就很容易了</p>
+<h4 id="再直接扩展UIAlertView-加上自己想要的链式编程函数"><a href="#再直接扩展UIAlertView-加上自己想要的链式编程函数" class="headerlink" title="再直接扩展UIAlertView,加上自己想要的链式编程函数"></a>再直接扩展UIAlertView,加上自己想要的链式编程函数</h4><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">UIAlertView</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="func"><span class="keyword">func</span> <span class="title">setMessage</span><span class="params">(msg:String)</span></span>-&gt;<span class="type">UIAlertView</span>&#123;<span class="comment">//在这里设定这个为静态函数,在里面实例化一个BlockAlert对象,再返回该对象</span></span><br><span class="line">        <span class="keyword">let</span> alert = <span class="type">BlockAlert</span>()</span><br><span class="line">        alert.message = msg</span><br><span class="line">        <span class="keyword">return</span> alert</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">addAlertStyle</span><span class="params">(style:UIAlertViewStyle)</span></span>-&gt;<span class="type">UIAlertView</span>&#123; <span class="comment">//直接在各个函数中封装一些操作.再返回自身</span></span><br><span class="line">        <span class="keyword">self</span>.alertViewStyle = style</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">addTitle</span><span class="params">(title:String)</span></span>-&gt;<span class="type">UIAlertView</span>&#123;</span><br><span class="line">        <span class="keyword">self</span>.title = title</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">addFirstButton</span><span class="params">(btnTitle:String)</span></span>-&gt;<span class="type">UIAlertView</span>&#123;</span><br><span class="line">        <span class="keyword">self</span>.addButtonWithTitle(btnTitle)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">addSecondButton</span><span class="params">(btnTitle:String)</span></span>-&gt;<span class="type">UIAlertView</span>&#123;</span><br><span class="line">        <span class="keyword">self</span>.addButtonWithTitle(btnTitle)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">addButtons</span><span class="params">(btnTitles:[String])</span></span>-&gt;<span class="type">UIAlertView</span>&#123;</span><br><span class="line">        <span class="keyword">for</span> title <span class="keyword">in</span> btnTitles&#123;</span><br><span class="line">            <span class="keyword">self</span>.addButtonWithTitle(title)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">addButtonClickEvent</span><span class="params">(clickButton:<span class="params">(<span class="params">(buttonIndex:Int,alert:UIAlertView)</span></span></span></span>-&gt;<span class="type">Void</span>)?)-&gt;<span class="type">UIAlertView</span>&#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> alert = <span class="keyword">self</span> <span class="keyword">as</span>? <span class="type">BlockAlert</span>&#123;<span class="comment">//对于block,先要判断它是不是BlockAlert,如果是的话才添加该block,后面都是这种操作</span></span><br><span class="line">            alert.completion = clickButton</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//这里也是省略了部分函数,因为原理都是一样的</span></span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">addAlertCancelEvent</span><span class="params">(event:<span class="params">(<span class="params">(alert:UIAlertView)</span></span></span></span>-&gt;<span class="type">Void</span>)?)-&gt;<span class="type">UIAlertView</span>&#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> alert = <span class="keyword">self</span> <span class="keyword">as</span>? <span class="type">BlockAlert</span>&#123;</span><br><span class="line">            alert.alertWithCancelBlock = event</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="func"><span class="keyword">func</span> <span class="title">alertWithButtonClick</span><span class="params">(clickButton:<span class="params">(<span class="params">(buttonIndex:Int,alert:UIAlertView)</span></span></span></span>-&gt;<span class="type">Void</span>)?)&#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> alert = <span class="keyword">self</span> <span class="keyword">as</span>? <span class="type">BlockAlert</span>&#123; <span class="comment">//这个为终结函数,没有返回值,在里面直接调用了show()方法.</span></span><br><span class="line">            alert.completion = clickButton</span><br><span class="line">            alert.show()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这里面我选择了用UIAlverView来扩展,而不是BlockAlert,这样可能会导致开发过程中踩进陷阱.因为在首个静态函数返回的对象是一个BlockAction对象,而不是UIAlertView对象<br>在后面添加Block时先要判断本身是不是BlockAction对象,如果是的话再将设定Block,所以在开发过程中要小心这个陷阱.当然读者也可以直接扩展BlockAlert,这样会更安全一些.</p>
+<h4 id="最后直接使用静态函数加链式编程来弹出Alert"><a href="#最后直接使用静态函数加链式编程来弹出Alert" class="headerlink" title="最后直接使用静态函数加链式编程来弹出Alert"></a>最后直接使用静态函数加链式编程来弹出Alert</h4><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">UIAlertView</span>.setMessage(<span class="string">"这里要设置信息"</span>).addTitle(<span class="string">"我是标题"</span>).addFirstButton(<span class="string">"取消"</span>).addSecondButton(<span class="string">"确认"</span>).alertWithButtonClick &#123; (buttonIndex, alert) -&gt; <span class="type">Void</span> <span class="keyword">in</span></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">"你按下了第<span class="subst">\(buttonIndex)</span>个按键"</span>)</span><br><span class="line">            <span class="comment">//你按下了第1个按键</span></span><br><span class="line">            <span class="comment">//你按下了第0个按键</span></span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>如果要使用其他的委托方法也很简单<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">UIAlertView</span>.setMessage(<span class="string">"这里要设置信息"</span>).addTitle(<span class="string">"我是标题"</span>).addFirstButton(<span class="string">"取消"</span>).addSecondButton(<span class="string">"确认"</span>).addWillPresentEvent &#123; (alert) <span class="keyword">in</span></span><br><span class="line">          <span class="built_in">print</span>(<span class="string">"the alertView will present"</span>)</span><br><span class="line">     &#125;.addDidPresentEvent &#123; (alert) <span class="keyword">in</span></span><br><span class="line">         <span class="built_in">print</span>(<span class="string">"the alertView did present"</span>)</span><br><span class="line">     &#125;.alertWithButtonClick &#123; (buttonIndex, alert) <span class="keyword">in</span></span><br><span class="line">           <span class="built_in">print</span>(<span class="string">"你按下了第<span class="subst">\(buttonIndex)</span>个按键"</span>)</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure></p>
+<p>当然其他的一些自定义样式,或者是带用户名输入和密码输入框的也很简单<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">UIAlertView</span>.setMessage(<span class="string">"这里要设置信息"</span>).addTitle(<span class="string">"我是标题"</span>).addFirstButton(<span class="string">"取消"</span>).addSecondButton(<span class="string">"确认"</span>).addAlertStyle(.<span class="type">LoginAndPasswordInput</span>).addDidPresentEvent &#123; (alert) <span class="keyword">in</span></span><br><span class="line">         <span class="built_in">print</span>(<span class="string">"the alertView did present"</span>)</span><br><span class="line">     &#125;.alertWithButtonClick &#123; (buttonIndex, alert) <span class="keyword">in</span></span><br><span class="line">         <span class="keyword">let</span> txt1 = alert.textFieldAtIndex(<span class="number">0</span>)?.text</span><br><span class="line">         <span class="keyword">let</span> txt2 = alert.textFieldAtIndex(<span class="number">1</span>)?.text</span><br><span class="line">         <span class="built_in">print</span>(<span class="string">"userName:<span class="subst">\(txt1)</span> password:<span class="subst">\(txt2)</span>"</span>)</span><br><span class="line">         <span class="comment">//打印出the alertView did present</span></span><br><span class="line">         <span class="comment">//userName:Optional("111") password:Optional("222")</span></span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://7xr2ax.com1.z0.glb.clouddn.com/GrandCue.png" alt="带用户名密码的Alert"><br><br><br>可见,使用链式编程加Block的方式基本只需要短短几行代码就可以满足大部分使用UIAlertView的使用场景,写起来很方便快捷.对于UIActionSheet也一样,可以将其完全改造成使用链式编程加Block的形式来使用.这个便留给读者<br>来完成了.相信看完上面的代码并实践过的读者很快就可以写出来.以上所有代码都可以在我的Github看到<a href="https://github.com/DuckDeck/GrandCue" target="_blank" rel="external">DuckDeck-GrandCue</a><br>但是目前Apple还是更推荐开发者使用最新的UIAlertController,它的API设计和UIAlertView是完全不同的.改成了基于Block的回调方式,使用起来更方便了.在这里这篇文章给大家详细地介绍了<br><a href="http://www.cocoachina.com/ios/20141219/10701.html" target="_blank" rel="external">UIAlertController详解</a>,有兴趣的读者可以去看看</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本文用一个足够简单的例子和大家探讨了怎么将原先使用UIAlertView编程方式改造成基于链式编程和block的编程方式.但是在实际的开发过程中,情况要比这个复杂得多,首先要考虑该业务和逻辑适不适合使用链式编程,其次设计出良好的<br>链式编程API也是需要花费很大精力的.函数返回值的设计也是很需要功力的,因为它直接影响了下一个调用函数.</p>
+<div class="ds-thread" data-thread-key="2016/03/06/iOS开发技巧系列-打造强大的BaseModel-篇一：让Model自我描述" data-title="iOS开发技巧系列-打造强大的BaseModel-篇一：让Model自我描述" data-url="http://stanhu.cc/2016/03/06/iOS开发技巧系列-打造强大的BaseModel-篇一：让Model自我描述"></div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS开发/" rel="tag">#iOS开发</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/14/ios-essay-grand-model-no4/" rel="next" title="iOS开发技巧系列---打造强大的BaseModel(篇四：使用Swift反射)">
+                <i class="fa fa-chevron-left"></i> iOS开发技巧系列---打造强大的BaseModel(篇四：使用Swift反射)
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"syanhu"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- 多说公共JS代码 end -->
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="Stan Hu" />
+          <p class="site-author-name" itemprop="name">Stan Hu</p>
+          <p class="site-description motion-element" itemprop="description">学习总结，思考感悟，求知奋斗</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">11</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+          
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/DuckDeck" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/stan-hu" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> ZhiHu
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/users/ba6dc2f48796/latest_articles" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> JianShu
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是链式编程"><span class="nav-number">1.</span> <span class="nav-text">什么是链式编程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链式编程的利弊"><span class="nav-number">2.</span> <span class="nav-text">链式编程的利弊</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用Block来回调UIAlertView的Delegate"><span class="nav-number">3.</span> <span class="nav-text">使用Block来回调UIAlertView的Delegate</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用链式编程和Block来改造UIAlertView"><span class="nav-number">4.</span> <span class="nav-text">使用链式编程和Block来改造UIAlertView</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#先定义一个新的类来继承UIAlertView-并且实现UIAlertViewDelegate协议"><span class="nav-number">4.1.</span> <span class="nav-text">先定义一个新的类来继承UIAlertView,并且实现UIAlertViewDelegate协议</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#再直接扩展UIAlertView-加上自己想要的链式编程函数"><span class="nav-number">4.2.</span> <span class="nav-text">再直接扩展UIAlertView,加上自己想要的链式编程函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#最后直接使用静态函数加链式编程来弹出Alert"><span class="nav-number">4.3.</span> <span class="nav-text">最后直接使用静态函数加链式编程来弹出Alert</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Stan Hu</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'syanhu';
+      var disqus_identifier = '2016/03/27/Use-chained-and-block-progran-to-enhance-UIAlertview/';
+      var disqus_title = 'iOS开发技巧系列---使用链式编程和Block来实现UIAlertView';
+      var disqus_url = 'http://stanhu.cc/2016/03/27/Use-chained-and-block-progran-to-enhance-UIAlertview/';
+
+      function run_disqus_script(disqus_script){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+      
+        run_disqus_script('embed.js');
+      
+    </script>
+  
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>
