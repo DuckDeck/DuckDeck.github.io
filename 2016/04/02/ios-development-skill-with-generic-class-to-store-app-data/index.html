@@ -1,0 +1,794 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS开发," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="以前在用C#开发程序的时侯，只要用到数组,必然离不开泛型。再配合集合的扩展方法和LINQ，对于集合数据的操作真是得心应手，非常爽快。后来我转到iOS开发，学会了Objective语言。发现在Objective-C里,一般最常用的数组容器就是NSArray和字典NSDictionary了。可惜这两者都不支持泛型。数据都是以NSObject的类型添加进来，理论上可以保存保存任何的引用类型，这就需要让开">
+<meta property="og:type" content="article">
+<meta property="og:title" content="开发技巧系列---使用泛型类来存储APP数据.">
+<meta property="og:url" content="http://stanhu.cc/2016/04/02/ios-development-skill-with-generic-class-to-store-app-data/index.html">
+<meta property="og:site_name" content="智慧与力量 | 求知者">
+<meta property="og:description" content="以前在用C#开发程序的时侯，只要用到数组,必然离不开泛型。再配合集合的扩展方法和LINQ，对于集合数据的操作真是得心应手，非常爽快。后来我转到iOS开发，学会了Objective语言。发现在Objective-C里,一般最常用的数组容器就是NSArray和字典NSDictionary了。可惜这两者都不支持泛型。数据都是以NSObject的类型添加进来，理论上可以保存保存任何的引用类型，这就需要让开">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1281203-1ecbad45bf87cbc9.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1281203-084a81fb7c3f2f3d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1281203-a80199dd13a3e9b2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1281203-5c96f69b6e75d3d2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2016-04-02T11:09:31.405Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="开发技巧系列---使用泛型类来存储APP数据.">
+<meta name="twitter:description" content="以前在用C#开发程序的时侯，只要用到数组,必然离不开泛型。再配合集合的扩展方法和LINQ，对于集合数据的操作真是得心应手，非常爽快。后来我转到iOS开发，学会了Objective语言。发现在Objective-C里,一般最常用的数组容器就是NSArray和字典NSDictionary了。可惜这两者都不支持泛型。数据都是以NSObject的类型添加进来，理论上可以保存保存任何的引用类型，这就需要让开">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"always"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 开发技巧系列---使用泛型类来存储APP数据. | 智慧与力量 | 求知者 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">智慧与力量 | 求知者</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">创作，英语，编程，学习......</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-画廊">
+          <a href="/gal/g.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-question-circle fa-fw"></i> <br />
+            
+            menu.画廊
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                开发技巧系列---使用泛型类来存储APP数据.
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-04-02T19:04:49+08:00" content="2016-04-02">
+              2016-04-02
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/04/02/ios-development-skill-with-generic-class-to-store-app-data/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/04/02/ios-development-skill-with-generic-class-to-store-app-data/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://upload-images.jianshu.io/upload_images/1281203-1ecbad45bf87cbc9.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<blockquote>
+<p>以前在用C#开发程序的时侯，只要用到数组,必然离不开泛型。再配合集合的扩展方法和LINQ，对于集合数据的操作真是得心应手，非常爽快。后来我转到iOS开发，学会了Objective语言。发现在Objective-C里,一般最常用的数组容器就是NSArray和字典NSDictionary了。可惜这两者都不支持泛型。数据都是以NSObject的类型添加进来，理论上可以保存保存任何的引用类型，这就需要让开发者来确保所有添加的数据类型的一至性。同样的，当从数组容器里取值时，需要将其转化成对应的Model。有时侯还需要进行类型判断。这样的操作不仅增加了代码的复杂性，也很容易出错。而Swift作为一门后起之秀，必然添加了对泛型的支持。弥补了Objective-C对数组操作的安全性，复杂性等的不足，而本篇文章向大家介绍了如果来定义一个泛型类，通过它来作为一种可以永久保存任意数据类型的数据容器，来实现iOS的数据持久化。</p>
+</blockquote>
+<h3 id="什么是泛型"><a href="#什么是泛型" class="headerlink" title="什么是泛型"></a>什么是泛型</h3><p>为了更直观一点,首先让我们来看看不支持泛型的Objective-C语言是怎么利用数据容器的<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@interface demo:NSObject//&#33258;&#23450;&#20041;&#23545;&#35937;&#10;@property (nonatomic,copy) NSString* demoString;&#10;@end&#10;@implementation demo&#10;&#10;@end&#10;&#10;NSMutableArray* arr = [NSMutableArray new];&#10;[arr addObject:[NSNumber numberWithBool:YES]];          //&#28155;&#21152;Bool&#31867;&#22411;&#10;[arr addObject:@&#34;111&#34;];                                 //&#21487;&#20197;&#23383;&#31526;&#20018;&#10;demo* dm = [demo new];&#10;dm.demoString = @&#34;String&#34;;&#10;[arr addObject:dm];                                     //&#28155;&#21152;&#33258;&#23450;&#20041;&#23545;&#35937;&#10;NSLog(@&#34;%@&#34;,arr);&#10;BOOL a = [arr[0] boolValue];                            //&#38656;&#35201;&#36716;&#25104;Bool&#10;NSString* b = arr[1] ;                                  //&#30452;&#25509;&#23558;id&#31867;&#22411;&#36171;&#21040;NSString&#31867;&#22411;&#10;demo* dm1 = arr[2];                                     //&#30452;&#25509;&#23558;id&#36171;&#20540;&#32473;demo&#31867;&#22411;&#10;NSLog(@&#34;a:%hhd b:%@.dm:%@&#34;,a,b,dm1);                    //&#21487;&#20197;&#27491;&#30830;&#22320;&#25171;&#21360;&#20986;&#26469;&#10;NSString* dm2 = arr[2];                                 //&#20063;&#21487;&#20197;&#23558;&#26412;&#36523;&#26159;demo&#31867;&#22411;&#30340;&#36171;&#20540;&#21040;String&#10;NSLog(@&#34;%@&#34;,dm2);                                       //&#19981;&#20250;&#25253;&#38169;.&#36816;&#34892;&#26102;dm2&#26412;&#36523;&#36824;&#26159;demo&#31867;&#22411;&#10;dm2.length;                                             //&#35843;&#29992;length&#26041;&#27861;&#23601;&#20250;&#20986;&#38169;,&#10;&#10;&#25171;&#21360;&#32467;&#26524;:&#10;2016-03-31 15:29:28.437 DemoObjc[1108:32945] (&#10;1,&#10;111,&#10;&#34;&#60;demo: 0x1001025f0&#62;&#34;&#10;)&#10;2016-03-31 15:29:28.438 DemoObjc[1108:32945] a:1 b:111.dm:&#60;demo: 0x1001025f0&#62;&#10;2016-03-31 15:29:28.438 DemoObjc[1108:32945] &#60;demo: 0x1001025f0&#62;//&#34429;&#28982;&#22312;&#20195;&#30721;&#38454;&#27573;&#26159;NSString&#31867;&#22411;&#65292;&#20294;&#26159;&#36816;&#34892;&#26102;&#26159;demo&#31867;&#22411;&#10;2016-03-31 15:29:28.438 DemoObjc[1108:32945] -[demo length]: unrecognized selector sent to instance 0x1001025f0&#10;2016-03-31 15:29:28.439 DemoObjc[1108:32945] *** Terminating app due to uncaught exception &#39;NSInvalidArgumentException&#39;, reason: &#39;-[demo length]: unrecognized selector sent to instance 0x1001025f0&#39;&#10;)</span><br></pre></td></tr></table></figure></p>
+<p>从上面的示例代码可以很清楚地看到，因为Objective-C不支持泛型，所以编译器没有做任何限制，可以在NSMutableArray里添加任何引用类型的数据，这些数据都以id类型保存。在取值时也一样，默认取出来的数据都是id类型，需要将其转化成原先保存的类型才行。这些操作都是需要开发者来确保正确性。如果不小心写错了，编译器也不会给出任何提示或者警告，只有在运行程序时才能触发错误。所以很容易出现隐藏的Bug，同时类型转换也增加了代码的复杂性。</p>
+<p>而泛型的出现刚好完全解决了上面的问题：<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arrInt = [<span class="type">Int</span>]()    <span class="comment">//定义了一个数据类型是Int类型的数组,其实就是一个只能添加Int类型数据的NSMutableArray。</span></span><br><span class="line">arrInt.append(<span class="number">1</span>)        <span class="comment">//添加1</span></span><br><span class="line">arrInt.append(<span class="number">2</span>)        <span class="comment">//添加2</span></span><br><span class="line">arrInt.append(<span class="string">"123"</span>)    <span class="comment">//添加字符串“123”</span></span><br><span class="line"><span class="comment">//编译器报错，Cannot convert value of type 'String' to expected argument type 'Int'</span></span><br><span class="line"><span class="comment">//不能将String转换成Int</span></span><br><span class="line"><span class="built_in">print</span>(arrInt[<span class="number">0</span>].<span class="keyword">dynamicType</span>)  <span class="comment">//取第一个值 ，打印出类型是Int</span></span><br><span class="line"><span class="keyword">let</span> str:<span class="type">String</span> = arrInt[<span class="number">1</span>]    <span class="comment">//将第二个值赋值给String</span></span><br><span class="line"><span class="comment">//编译器报错， Cannot convert value of type 'Int' to specified type 'String'</span></span><br><span class="line"><span class="comment">//不能将转Int换成String</span></span><br></pre></td></tr></table></figure></p>
+<p>从上面的代码很容易看出，对于数据类型是Int的数组，只能添加Int类型的数据，其他的数据类型编译器都会报错。取值也一样，取出来的数直接就是Int类型了，不需要再转型了。<br>而且比较方便的是Swift的数据容器是是可以直接保存值类型的，不需要像Objective-C一样需要将其转成NSNumber了。同样，你也可以声明一个类型为String类型的数组([String])，<br>或者自定义类的的泛型数组，编译器都会帮你在编码时告诉你正确的数据类型，防止开发者添加错误的数据类型。</p>
+<h3 id="使用泛型的优点"><a href="#使用泛型的优点" class="headerlink" title="使用泛型的优点"></a>使用泛型的优点</h3><p>使用泛型的优点有很多：</p>
+<ul>
+<li>泛型提供了一个强类型的编程模型</li>
+<li>编译时的类型检查减少了运行时发生数据类型转换异常的几率</li>
+<li>简化了代码，缓解了代码膨胀。</li>
+<li>性能得到了提升，不需要在运行时再做类型检查。</li>
+<li>代码的可读性更好，并且有更好的代码智能提示。</li>
+</ul>
+<p>其实在最新的XCode 7.X中，苹果也悄悄地加入了Objective-C语言的弱泛型支持,见下面代码。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSMutableArray</span>&lt;<span class="built_in">NSString</span> *&gt;* arrString  = [<span class="built_in">NSMutableArray</span> new]; <span class="comment">//可以在NSMutableArray后面加上数据类型，这样就声明了一个泛型的NSMutableArray</span></span><br><span class="line"></span><br><span class="line">[arrString addObject:[<span class="built_in">NSNumber</span> numberWithUnsignedInteger:<span class="number">1</span>]]; <span class="comment">//这里编译器会警告你添加了错误的数据类型，但是不会强制报错。</span></span><br></pre></td></tr></table></figure>
+<p>可以在声明NSMutableArray时添加一个弱泛型约束，之所以是弱泛型，是因为编译器会帮你检查数据类型是否正确，如果不正确会有一个警告，但是不会强制报错，代码还是可以编译过的。<br><img src="http://upload-images.jianshu.io/upload_images/1281203-084a81fb7c3f2f3d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>写代码时XCode会自动提示它你应该添加什么类型的数据<br><img src="http://upload-images.jianshu.io/upload_images/1281203-a80199dd13a3e9b2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>取值也会告诉你里面保存了什么类型的数据</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1281203-5c96f69b6e75d3d2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>如果你把错误的数据类型存进去，编译器会警告，但不是强制报错。</p>
+<h3 id="iOS数据持久化方案的问题"><a href="#iOS数据持久化方案的问题" class="headerlink" title="iOS数据持久化方案的问题"></a>iOS数据持久化方案的问题</h3><p>数据存储在APP开发中起着至关重要的作用。相信各位开发者在开发过程中都有碰到如下情况：</p>
+<ul>
+<li>需要一些全局变量,来记录APP的一些设置或者是频繁变动的数据</li>
+<li>页面之间或者各种View之间的传值,</li>
+<li>需要临时缓存一些数据。</li>
+</ul>
+<p>这些数据存储的处理在开发过程极为常见，而且有一个共同点就是处理的各种数据类型完全不一样，有时是各种数字(NSNumber),也有很常用的字符串，当然各种数组或者字典也是不可少的。<br>所以由此带来的一个问题就是这些数据需要以什么的格式保存，保存后取出来又要如何转化成原先的数据类型，这些都是要手写代码去处理。前面已经说过，泛型正好是解决此类问题而生。但在这里并不是使用泛型数据容器，而是使用泛型类。那么怎么使用泛型类来写一个通用的数据存储框架，可以解决以上问题呢？</p>
+<p>首先iOS的数据存储离不开iOS存储本身的机制，也就是那如下几种：</p>
+<ul>
+<li>Plist</li>
+<li>归档&amp;NSUserDefault</li>
+<li>SQLite3</li>
+<li>CoreData</li>
+</ul>
+<p>关于这些数据持久化的介绍和使用方式网络上有很多的文章讲解，在这里我就不详述了。而且上面市面上还有不少对这些数据持久化API的封装开源库，比如说著名的FMDB，但是都没有完全解决上面的问题。<strong>我们需要一个轻量级，可以在代码文件的任何位置读写，支持缓存,临时存储(APP退出后数据丢失)和数据发生变化的监视，同时不需要做数据类型的转换且可以保存任何类型数据的数据存储方案</strong>。而Swift泛型的出现，使得这种存储方案成为可能。</p>
+<h3 id="使用泛型类来存储数据"><a href="#使用泛型类来存储数据" class="headerlink" title="使用泛型类来存储数据"></a>使用泛型类来存储数据</h3><p>和泛型数据容器相比，自定义泛型类用得并不多。可能许多初级开发者不好理解泛型类，更不明白泛型类有什么作用。关于这个，可以去参考Swift的<code>Array</code>或者是<code>NSDictionry</code>的定义，并且练下手会更好一点。下面我们来定义一个泛型类<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GrandStore</span>&lt;<span class="title">T</span>&gt; </span>&#123;            <span class="comment">//在类名后面加个&lt;T&gt;表示这是一个泛型类</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> name:<span class="type">String</span>!            <span class="comment">//这个变量极为重要，相当于是一个Key，表示这个存储的名称。</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> value:<span class="type">T</span>?                <span class="comment">//私有内部存储值，是个泛型字段</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> defaultValue:<span class="type">T</span>?         <span class="comment">//默认值，也是个泛型字段</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> hasValue:<span class="type">Bool</span> = <span class="literal">false</span>   <span class="comment">//Bool类型，用来判断有没有值</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> timeout:<span class="type">Int</span> = <span class="number">0</span>         <span class="comment">//缓存时间，如果你设定一个带缓存的存储数据，需要设定这个值</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> storeLevel:<span class="type">Int</span> = <span class="number">0</span>      <span class="comment">//存储等级，用来判断保存在什么地方</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> isTemp = <span class="literal">false</span>          <span class="comment">//如果设为true ，那么只是放到内存里临时保存       </span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> timeoutDate:<span class="type">NSDate</span>?     <span class="comment">//过期的时间，用于带缓存的存储</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面就是这个泛型存储类的全部私有字段。各有什么作用注释里都有说明，下面上它的两个构造器<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">public</span>  <span class="keyword">init</span>(name:<span class="type">String</span>,defaultValue:<span class="type">T</span>) &#123;    <span class="comment">//最常用的构造器，适用于任何需要永久保存的数据</span></span><br><span class="line">      <span class="keyword">self</span>.name = name;</span><br><span class="line">      <span class="keyword">self</span>.defaultValue = defaultValue;</span><br><span class="line">      storeLevel = <span class="keyword">self</span>.getStoreLevel()       <span class="comment">//获取存储级别，</span></span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span>  <span class="keyword">init</span>(name:<span class="type">String</span>,defaultValue:<span class="type">T</span>,timeout:<span class="type">Int</span>) &#123;  <span class="comment">//如果你要保存带缓存的数据，需要调用这个构造器。timeout表示你需要缓存的时间，单位是秒</span></span><br><span class="line">      <span class="keyword">self</span>.name = name;</span><br><span class="line">      <span class="keyword">self</span>.defaultValue = defaultValue;</span><br><span class="line">      <span class="keyword">self</span>.timeout = timeout</span><br><span class="line">      <span class="keyword">if</span> <span class="keyword">self</span>.timeout &gt; <span class="number">0</span>&#123;</span><br><span class="line">          timeoutDate = <span class="type">NSDate</span>(timeIntervalSinceNow: <span class="type">Double</span>(<span class="keyword">self</span>.timeout))</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span>&#123;                                            <span class="comment">//如果timeout&lt;＝0话，那么就是临时存储，只保存的内存里面，APP退出后丢失</span></span><br><span class="line">          isTemp = <span class="literal">true</span></span><br><span class="line">      &#125;</span><br><span class="line">      storeLevel = <span class="keyword">self</span>.getStoreLevel()               <span class="comment">//获取存储级别，</span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面是泛型类的两个构造器。因为其参数是T类型，也就是泛型，那么就可以往里在传任何类型。同时这是一个默认值，如果你没有设定值的话，那也是可以取出值的，就是这个默认值。<br>后面的构造器就是带缓存有的了。如果你传的缓存时间大于0，那么这个时间(秒为单位)就是缓存的时间，如果小于等于0，那就这是一个临时存储。它不会写到硬盘里面，只保存在内存里。<br>下面上这个泛型类最核心的属性，<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">    </span><br><span class="line"> <span class="keyword">public</span>  <span class="keyword">var</span> <span class="type">Value</span>:<span class="type">T</span>?</span><br><span class="line"> &#123;</span><br><span class="line">     <span class="keyword">get</span>&#123;</span><br><span class="line">        <span class="keyword">if</span> isExpire&#123;                                    <span class="comment">//判断有没有过期</span></span><br><span class="line">            <span class="keyword">self</span>.clear()                                <span class="comment">//过期了就清空，再将是否有值设成false</span></span><br><span class="line">            hasValue = <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>!hasValue                                     <span class="comment">//如果没有值，也就是说过期了或者内存中没有</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> isTemp&#123;                                  <span class="comment">//如果是临时保存的，直接将其设成默认值</span></span><br><span class="line">                <span class="keyword">if</span> <span class="keyword">self</span>.value == <span class="literal">nil</span>&#123;</span><br><span class="line">                    <span class="keyword">self</span>.value = defaultValue         </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;                               </span><br><span class="line">               <span class="keyword">if</span> !store.hasValue(name)&#123;                <span class="comment">//判断存储仓库里有没有保存</span></span><br><span class="line">                    <span class="keyword">self</span>.value = defaultValue           <span class="comment">//如果没有保存，就设成默认值再保存，</span></span><br><span class="line">                    store.setValue（<span class="keyword">self</span>.value）forkey(name)</span><br><span class="line">               &#125;</span><br><span class="line">               <span class="keyword">else</span>&#123;</span><br><span class="line">                    <span class="keyword">self</span>.value = store.setValueForKey(name) <span class="keyword">as</span>? <span class="type">T</span><span class="comment">//有的话直接取出来</span></span><br><span class="line">               &#125;</span><br><span class="line">                </span><br><span class="line">            &#125;</span><br><span class="line">            hasValue = <span class="literal">true</span>                             <span class="comment">//将是否有值设成true</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span>.value                               <span class="comment">//返回取出来的值</span></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">set</span>&#123;</span><br><span class="line">        <span class="keyword">self</span>.value = newValue</span><br><span class="line">        <span class="keyword">if</span> !isTemp&#123;</span><br><span class="line">            store.setValue（<span class="keyword">self</span>.value）forkey(name)      <span class="comment">//设值就比较简单了，直接保存就行了、</span></span><br><span class="line">        &#125;</span><br><span class="line">        hasValue = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里我用了伪代码，同时省略了一些功能。因为原代码比较长也有点复杂，这里有几个关键点要说明下</p>
+<ol>
+<li>最上面的isExpire是个计算属性，用来判断保存的数据有没有过期，如果是永久存在的，就直接返回false，如果不是，那么根据timeoutDate来判断有没有过期<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">var</span> isExpire:<span class="type">Bool</span>&#123;</span><br><span class="line">    <span class="keyword">get</span>&#123;</span><br><span class="line">        <span class="keyword">if</span> timeoutDate == <span class="literal">nil</span>&#123;                          <span class="comment">//对于永久保存有，直接返回false</span></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="type">NSDate</span>().compare(timeoutDate!) == <span class="type">NSComparisonResult</span>.<span class="type">OrderedDescending</span>   <span class="comment">//对于有缓存的，根据timeoutDate判断有没有过期</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>如果已经过期，那么需要清空数据，再将hasValue设成false</p>
+<ol>
+<li>如果hasValue是false，也就是说内存中不存在该值，那么就需要到存储仓库去看了。这里面我省略了一些代码。总体思路如下：<br>先判断存储仓库有没有，如果没有，就直接设置成默认值，再保存到存储里。<br>如果存在，就从存储仓库里取出，最后再将hasValue设置成true<br>在这里存储仓库是指另一个对iOS持久化封装的库，你可以用Github常用的开源库，也可以自己写。</li>
+<li>其实对于取出来的数据上需要转换的，由Object转换成T类型就行了。</li>
+<li>对于设值，首先判断是不是临时保存的，如果不是，那么需要将其保存到存储仓库，最后再将hasValue设成true就行了。</li>
+</ol>
+<p>上面就是这个泛型类最核心的功能的代码实现。这里面其实是对最常见的valueForKey和setValueForKey二次封装，并且再将数据再转换成T类型。因为在用构造器实例化这个类时，<br>它就会根据传入的默认值得知保存的数据是什么类型的。所以便可以正确地转换成原先的类型。</p>
+<p>至于这些细节实现代码，比如数据值变化时的监视，每次设定值时更新缓存过期的时间，怎么将数据保存到存储仓库里，以及清空功能等，读者有兴趣可以去看源码<a href="https://github.com/DuckDeck/GrandStore" target="_blank" rel="external">GrandStore</a>。 我在里面是采用归档的形式来将保存各种数据的。并且在我做的所有项目里都用了这个库。不过需要注意的是，因为Objective-C<br>没有泛型支持，所以目前GrandStore可能不支持Objective-C。只能用到Swift环境中。如果觉得不错，请给个Star哦！</p>
+<h3 id="使用GrandStore"><a href="#使用GrandStore" class="headerlink" title="使用GrandStore"></a>使用GrandStore</h3><p>使用GrandStore十分简单，可以直接写在全局变量里面。所以项目里的任何文件都可以直接访问。<br>比如你可以用一个值来记录APP是不是第一次开启<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="type">AppFirstLaunch</span> = <span class="type">GrandStore</span>(name: <span class="string">"AppFirstLaunch"</span>, defaultValue: <span class="literal">true</span>) <span class="comment">//默认为true,说明App是第一次开启</span></span><br><span class="line"><span class="comment">//一但app有启用过，那么将其设成false就行了，</span></span><br><span class="line"><span class="type">AppFirstLaunch</span>.<span class="type">Value</span> ＝ <span class="literal">false</span></span><br><span class="line"><span class="comment">//判断APP是不是第一次启动</span></span><br><span class="line"><span class="keyword">if</span> <span class="type">AppFirstLaunch</span>.<span class="type">Value</span>!&#123;</span><br><span class="line"><span class="comment">//第一次启动，在里面写一些处理的代码。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>怎么样，用这个来存储一些全局的变量可以是说十分的方便，无论是读取还是写入，都不需要特定的方法，也不需要进行数据类型转换，直接使用就行。<br>同样的，还可以用它来保存其他的任何类型，比如:<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> student = <span class="type">GrandStore</span>(name: <span class="string">"student"</span>, defaultValue: <span class="type">Student</span>()) <span class="comment">//保存自定义类型</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span>:<span class="title">GrandModel</span></span>&#123;                                      <span class="comment">//这里注意，我让Student继承了GrandModel，因为在我写的GrandStroe中，我是用归档来保存对象的</span></span><br><span class="line">    <span class="keyword">var</span> name:<span class="type">String</span>?                                           </span><br><span class="line">    <span class="keyword">var</span> id:<span class="type">Int</span> = <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> stu = <span class="type">Student</span>()</span><br><span class="line">stu.name = <span class="string">"张三"</span></span><br><span class="line">stu.id = <span class="number">1</span></span><br><span class="line">student.<span class="type">Value</span> = stu              <span class="comment">//新建一个Student对象再赋值给GrandStore</span></span><br><span class="line"><span class="keyword">let</span> stu1 = student.<span class="type">Value</span>!       <span class="comment">//取出来直接就是Student对象，可以直接操作</span></span><br><span class="line">stu1.name = <span class="string">"李四"</span></span><br><span class="line">student.<span class="type">Value</span> = stu1            <span class="comment">//修改好的值可以再赋回去实现永久保存</span></span><br></pre></td></tr></table></figure></p>
+<p>因为我是用归档来实现上面所说的存储仓库的。所以如果我想用GrandStore来保存自定义对象，那么要让它实现NSCoding协议，我在前面写了一系列的文章<a href="http://www.jianshu.com/p/53b1e5785b24" target="_blank" rel="external">打造强大的BaseModel</a>中有实现自动归档的GrandModel，所以可以在这里直接使用。<br>无论是数组还是字典都毫无压力<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> arrTest = <span class="type">GrandStore</span>(name: <span class="string">"arrTest"</span>, defaultValue: [<span class="type">String</span>]()) <span class="comment">//保存数据</span></span><br><span class="line"><span class="keyword">let</span> dictTest = <span class="type">GrandStore</span>(name: <span class="string">"dictTest"</span>, defaultValue: [<span class="type">String</span>:<span class="type">String</span>]())  <span class="comment">//保存字典 </span></span><br><span class="line"><span class="keyword">var</span> demoCache = <span class="type">GrandStore</span>(name: <span class="string">"CacheTest"</span>, defaultValue: <span class="string">""</span>, timeout: <span class="number">10</span>) <span class="comment">//10秒缓存时间的一个字符串</span></span><br><span class="line"> <span class="keyword">var</span> demoTemp = <span class="type">GrandStore</span>(name: <span class="string">"demoTemp"</span>, defaultValue: <span class="string">"temp"</span>, timeout: <span class="number">0</span>)<span class="comment">//只保存在内存里的一个字符串</span></span><br></pre></td></tr></table></figure></p>
+<p> 更多的使用示例请参考我的Github,上面有链接</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Swift泛型的出现弥补了Objective-C没有泛型的去缺陷，更是带来了更多现代编程语言诸多的便捷特性。使用Swift的泛型，我们有了一个最好的强类型编程模式。在此基础上，泛型方法，闭包，高阶函数<br>等有了更好的用武之地，极大的提升了开发效率。我在此建议会Objective-C的开发者尝试去学习Swift，掌握它，你会发现另一片天地。</p>
+<div class="ds-thread" data-thread-key="2016/04/02/ios-development-skill-with-generic-class-to-store-app-data" data-title="ios-development-skill-with-generic-class-to-store-app-data" data-url="http://stanhu.cc/2016/04/02/ios-development-skill-with-generic-class-to-store-app-data"></div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS开发/" rel="tag">#iOS开发</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/27/Women-with-Zika-should-wait-eight-weeks-before-trying-to-become-pregnant/" rel="next" title="感染了寨卡病毒的女性至少要八周后能才怀孕">
+                <i class="fa fa-chevron-left"></i> 感染了寨卡病毒的女性至少要八周后能才怀孕
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"syanhu"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- 多说公共JS代码 end -->
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="Stan Hu" />
+          <p class="site-author-name" itemprop="name">Stan Hu</p>
+          <p class="site-description motion-element" itemprop="description">学习总结，思考感悟，求知奋斗</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">14</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+          
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/DuckDeck" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/stan-hu" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> ZhiHu
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/users/ba6dc2f48796/latest_articles" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> JianShu
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是泛型"><span class="nav-number">1.</span> <span class="nav-text">什么是泛型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用泛型的优点"><span class="nav-number">2.</span> <span class="nav-text">使用泛型的优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iOS数据持久化方案的问题"><span class="nav-number">3.</span> <span class="nav-text">iOS数据持久化方案的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用泛型类来存储数据"><span class="nav-number">4.</span> <span class="nav-text">使用泛型类来存储数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用GrandStore"><span class="nav-number">5.</span> <span class="nav-text">使用GrandStore</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Stan Hu</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'syanhu';
+      var disqus_identifier = '2016/04/02/ios-development-skill-with-generic-class-to-store-app-data/';
+      var disqus_title = '开发技巧系列---使用泛型类来存储APP数据.';
+      var disqus_url = 'http://stanhu.cc/2016/04/02/ios-development-skill-with-generic-class-to-store-app-data/';
+
+      function run_disqus_script(disqus_script){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+      
+        run_disqus_script('embed.js');
+      
+    </script>
+  
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>
