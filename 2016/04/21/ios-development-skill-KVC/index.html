@@ -1,0 +1,825 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS开发," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="KVC（Key-value coding）键值编码，单看这个名字可能不太好理解。其实翻译一下就很简单了，就是指iOS的开发中，可以允许开发者通过Key名直接访问对象的属性，或者给对象的属性赋值。而不需要调用明确的存取方法。这样就可以在运行时动态在访问和修改对象的属性。而不是在编译时确定，这也是iOS开发中的黑魔法之一。很多高级的iOS开发技巧都是基于KVC实现的。目前网上关于KVC的文章在非常多，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS开发技巧系列---详解KVC(我告诉你KVC的一切)">
+<meta property="og:url" content="http://stanhu.cc/2016/04/21/ios-development-skill-KVC/index.html">
+<meta property="og:site_name" content="智慧与力量 | 求知者">
+<meta property="og:description" content="KVC（Key-value coding）键值编码，单看这个名字可能不太好理解。其实翻译一下就很简单了，就是指iOS的开发中，可以允许开发者通过Key名直接访问对象的属性，或者给对象的属性赋值。而不需要调用明确的存取方法。这样就可以在运行时动态在访问和修改对象的属性。而不是在编译时确定，这也是iOS开发中的黑魔法之一。很多高级的iOS开发技巧都是基于KVC实现的。目前网上关于KVC的文章在非常多，">
+<meta property="og:image" content="http://7xr2ax.com1.z0.glb.clouddn.com/ios%20issay%20for%20kvc.jpg">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1281203-58710faea20a803e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2016-04-21T14:16:53.877Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS开发技巧系列---详解KVC(我告诉你KVC的一切)">
+<meta name="twitter:description" content="KVC（Key-value coding）键值编码，单看这个名字可能不太好理解。其实翻译一下就很简单了，就是指iOS的开发中，可以允许开发者通过Key名直接访问对象的属性，或者给对象的属性赋值。而不需要调用明确的存取方法。这样就可以在运行时动态在访问和修改对象的属性。而不是在编译时确定，这也是iOS开发中的黑魔法之一。很多高级的iOS开发技巧都是基于KVC实现的。目前网上关于KVC的文章在非常多，">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"always"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> iOS开发技巧系列---详解KVC(我告诉你KVC的一切) | 智慧与力量 | 求知者 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">智慧与力量 | 求知者</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">创作，英语，编程，学习......</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-画廊">
+          <a href="/gal/g.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-question-circle fa-fw"></i> <br />
+            
+            menu.画廊
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                iOS开发技巧系列---详解KVC(我告诉你KVC的一切)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-04-21T22:12:52+08:00" content="2016-04-21">
+              2016-04-21
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/04/21/ios-development-skill-KVC/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/04/21/ios-development-skill-KVC/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://7xr2ax.com1.z0.glb.clouddn.com/ios%20issay%20for%20kvc.jpg" alt=""></p>
+<blockquote>
+<p>KVC（Key-value coding）键值编码，单看这个名字可能不太好理解。其实翻译一下就很简单了，就是指iOS的开发中，可以允许开发者通过Key名直接访问对象的属性，或者给对象的属性赋值。而不需要调用明确的存取方法。这样就可以在运行时动态在访问和修改对象的属性。而不是在编译时确定，这也是iOS开发中的黑魔法之一。很多高级的iOS开发技巧都是基于KVC实现的。目前网上关于KVC的文章在非常多，有的只是简单地说了下用法，有的讲得深入但是在使用场景和最佳实践没有说明，我写下这遍文章就是给大家详解一个最完整最详细的KVC。</p>
+</blockquote>
+<h2 id="KVC在iOS中的定义"><a href="#KVC在iOS中的定义" class="headerlink" title="KVC在iOS中的定义"></a>KVC在iOS中的定义</h2><p>无论是Swift还是Objective-C，KVC的定义都是对NSObject的扩展来实现的(Objective-c中有个显式的<code>NSKeyValueCoding</code>类别名，而Swift没有，也不需要)所以对于所有继承了NSObject在类型，都能使用KVC(一些纯Swift类和结构体是不支持KVC的)，下面是KVC最为重要的四个方法<br><figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- <span class="comment">(nullable id)</span>valueForKey:<span class="comment">(NSString *)</span>key;                          <span class="comment">//直接通过Key来取值</span></span><br><span class="line">- <span class="comment">(void)</span>setValue:<span class="comment">(nullable id)</span>value forKey:<span class="comment">(NSString *)</span>key;          <span class="comment">//通过Key来设值</span></span><br><span class="line">- <span class="comment">(nullable id)</span>valueForKeyPath:<span class="comment">(NSString *)</span>keyPath;                  <span class="comment">//通过KeyPath来取值</span></span><br><span class="line">- <span class="comment">(void)</span>setValue:<span class="comment">(nullable id)</span>value forKeyPath:<span class="comment">(NSString *)</span>keyPath;  <span class="comment">//通过KeyPath来设值</span></span><br></pre></td></tr></table></figure></p>
+<p>当然NSKeyValueCoding类别中还有其他的一些方法，下面列举一些<br><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">+ (<span class="built_in">BOOL</span>)accessInstanceVariablesDirectly;</span><br><span class="line"><span class="comment">//默认返回YES，表示如果没有找到Set&lt;Key&gt;方法的话，会按照_key，_iskey，key，iskey的顺序搜索成员，设置成NO就不这样搜索</span></span><br><span class="line">- (<span class="built_in">BOOL</span>)validateValue:(<span class="keyword">inout</span> <span class="keyword">id</span> __nullable * __nonnull)ioValue forKey:(<span class="built_in">NSString</span> *)inKey error:(<span class="keyword">out</span> <span class="built_in">NSError</span> **)outError;</span><br><span class="line"><span class="comment">//KVC提供属性值确认的API，它可以用来检查set的值是否正确、为不正确的值做一个替换值或者拒绝设置新值并返回错误原因。</span></span><br><span class="line">- (<span class="built_in">NSMutableArray</span> *)mutableArrayValueForKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line"><span class="comment">//这是集合操作的API，里面还有一系列这样的API，如果属性是一个NSMutableArray，那么可以用这个方法来返回</span></span><br><span class="line">- (nullable <span class="keyword">id</span>)valueForUndefinedKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line"><span class="comment">//如果Key不存在，且没有KVC无法搜索到任何和Key有关的字段或者属性，则会调用这个方法，默认是抛出异常</span></span><br><span class="line">- (<span class="keyword">void</span>)setValue:(nullable <span class="keyword">id</span>)value forUndefinedKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line"><span class="comment">//和上一个方法一样，只不过是设值。</span></span><br><span class="line">- (<span class="keyword">void</span>)setNilValueForKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line"><span class="comment">//如果你在SetValue方法时面给Value传nil，则会调用这个方法</span></span><br><span class="line">- (<span class="built_in">NSDictionary</span>&lt;<span class="built_in">NSString</span> *, <span class="keyword">id</span>&gt; *)dictionaryWithValuesForKeys:(<span class="built_in">NSArray</span>&lt;<span class="built_in">NSString</span> *&gt; *)keys;</span><br><span class="line"><span class="comment">//输入一组key,返回该组key对应的Value，再转成字典返回，用于将Model转到字典。</span></span><br></pre></td></tr></table></figure></p>
+<p>上面的这些方法在碰到特殊情况或者有特殊需求还是会用到的，所以也是可以了解一下。后面的代码示例会有讲到其中的一些方法。<br>同时苹果对一些容器类比如NSArray或者NSSet等，KVC有着特殊的实现。建议有基础的或者英文好的开发者直接去看苹果的官方文档，相信你会对KVC的理解更上一个台阶。</p>
+<h2 id="KVC是怎么寻找Key的"><a href="#KVC是怎么寻找Key的" class="headerlink" title="KVC是怎么寻找Key的"></a>KVC是怎么寻找Key的</h2><p>KVC是怎么使用的，我相信绝大多数的开发者都很清楚，我在这里就不再写简单的使用KVC来设值和取值的代码了，首页我们来探讨KVC在内部是按什么样的顺序来寻找key的。<br>当调用<code>setValue：属性值 forKey：@”name“</code>的代码时，底层的执行机制如下：</p>
+<ul>
+<li>程序优先调用<code>set&lt;Key&gt;:属性值</code>方法，代码通过setter方法完成设置。<strong>注意，这里的<key>是指成员变量名，首字母大清写要符合KVC的全名规则，下同</key></strong></li>
+<li>如果没有找到setName：方法，KVC机制会检查<code>+ (BOOL)accessInstanceVariablesDirectly</code>方法有没有返回YES，默认该方法会返回YES，如果你重写了该方法让其返回NO的话，那么在这一步KVC会执行<code>setValue：forUNdefinedKey：</code>方法，不过一般开发者不会这么做。所以KVC机制会搜索该类里面有没有名为<code>_&lt;key&gt;</code>的成员变量，无论该变量是在类接口部分定义，还是在类实现部分定义，也无论用了什么样的访问修饰符，只在存在以<code>_&lt;key&gt;</code>命名的变量，KVC都可以对该成员变量赋值。</li>
+<li>如果该类即没有<code>set&lt;Key&gt;：</code>方法，也没有<code>_&lt;key&gt;</code>成员变量，KVC机制会搜索<code>_is&lt;Key&gt;</code>的成员变量，</li>
+<li>和上面一样，如果该类即没有<code>set&lt;Key&gt;：</code>方法，也没有<code>_&lt;key&gt;</code>和<code>_is&lt;Key&gt;</code>成员变量，KVC机制再会继续搜索<code>&lt;key&gt;</code>和<code>is&lt;Key&gt;</code>的成员变量。再给它们赋值。</li>
+<li>如果上面列出的方法或者成员变量都不存在，系统将会执行该对象的<code>setValue：forUNdefinedKey：</code>方法，默认是抛出异常。</li>
+</ul>
+<p>如果开发者想让这个类禁用KVC里，那么重写<code>+ (BOOL)accessInstanceVariablesDirectly</code>方法让其返回NO即可，这样的话如果KVC没有找到<code>set&lt;Key&gt;:</code>属性名时，会直接用<code>setValue：forUNdefinedKey：</code>方法。</p>
+<p>下面我们来让代码来测试一下上面的KVC机制<br><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Dog</span> : <span class="title">NSObject</span></span></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Dog</span></span></span><br><span class="line">&#123;</span><br><span class="line">     <span class="built_in">NSString</span>* toSetName;</span><br><span class="line">    <span class="built_in">NSString</span>* isName;</span><br><span class="line">    <span class="comment">//NSString* name;</span></span><br><span class="line">    <span class="built_in">NSString</span>* _name;</span><br><span class="line">    <span class="built_in">NSString</span>* _isName;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// -(void)setName:(NSString*)name&#123;</span></span><br><span class="line"><span class="comment">//     toSetName = name;</span></span><br><span class="line"><span class="comment">// &#125;</span></span><br><span class="line"><span class="comment">//-(NSString*)getName&#123;</span></span><br><span class="line"><span class="comment">//    return toSetName;</span></span><br><span class="line"><span class="comment">//&#125;</span></span><br><span class="line">+(<span class="built_in">BOOL</span>)accessInstanceVariablesDirectly&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br><span class="line">-(<span class="keyword">id</span>)valueForUndefinedKey:(<span class="built_in">NSString</span> *)key&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"出现异常，该key不存在%@"</span>,key);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br><span class="line">-(<span class="keyword">void</span>)setValue:(<span class="keyword">id</span>)value forUndefinedKey:(<span class="built_in">NSString</span> *)key&#123;</span><br><span class="line">     <span class="built_in">NSLog</span>(<span class="string">@"出现异常，该key不存在%@"</span>,key);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> * argv[]) &#123;</span><br><span class="line">    <span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">        <span class="comment">// insert code here...</span></span><br><span class="line">        Dog* dog = [Dog new];</span><br><span class="line">        [dog setValue:<span class="string">@"newName"</span> forKey:<span class="string">@"name"</span>];</span><br><span class="line">        <span class="built_in">NSString</span>* name = [dog valueForKey:<span class="string">@"toSetName"</span>];</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,name);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>首先我们先重写<code>accessInstanceVariablesDirectly</code>方法让其返回NO，再运行代码（注意上面注释的部分），XCode直接打印出<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">15</span> <span class="number">15</span>:<span class="number">52</span>:<span class="number">12.039</span> DemoKVC[<span class="number">9681</span>:<span class="number">287627</span>] 出现异常，该key不存在name</span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">15</span> <span class="number">15</span>:<span class="number">52</span>:<span class="number">12.040</span> DemoKVC[<span class="number">9681</span>:<span class="number">287627</span>] 出现异常，该key不存在toSetName</span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">15</span> <span class="number">15</span>:<span class="number">52</span>:<span class="number">12.040</span> DemoKVC[<span class="number">9681</span>:<span class="number">287627</span>] (null)</span><br></pre></td></tr></table></figure></p>
+<p>这说明了重写<code>+(BOOL)accessInstanceVariablesDirectly</code>方法让其返回NO后,KVC找不到SetName：方法后，不再去找name系列成员变量，而是直接调用forUndefinedKey方法<br>所以开发者如果不想让自己的类实现KVC，就可以这么做。<br>下面那两个setter和gettr的注释取消掉，再把<br><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSString* <span class="property">name</span> = [dog valueForKey:@<span class="string">"toSetName"</span>]; 换成 NSString* <span class="property">name</span> = [dog valueForKey:@<span class="string">"name"</span>];</span><br></pre></td></tr></table></figure></p>
+<p>XCode就可以正确地打印出正确的值了<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">15</span> <span class="number">15</span>:<span class="number">56</span>:<span class="number">22.130</span> DemoKVC[<span class="number">9726</span>:<span class="number">289258</span>] newName</span><br></pre></td></tr></table></figure></p>
+<p>下面再注释到<code>accessInstanceVariablesDirectly</code>方法，就能测试其他的key查找顺序了，为了节省篇幅，剩下的的KVC对于key寻找机制就不在这里展示了，有兴趣的读者可以写代码去验证。</p>
+<p>当调用<code>ValueforKey：@”name“</code>的代码时，KVC对key的搜索方式不同于<code>setValue：属性值 forKey：@”name“</code>，其搜索方式如下</p>
+<ul>
+<li>首先按<code>get&lt;Key&gt;</code>,<code>&lt;key&gt;</code>,<code>is&lt;Key&gt;</code>的顺序方法查找getter方法，找到的话会直接调用。如果是BOOL或者int等值类型， 会做NSNumber转换</li>
+<li>如果上面的getter没有找到，KVC则会查找<code>countOf&lt;Key&gt;</code>,<code>objectIn&lt;Key&gt;AtIndex</code>,<code>&lt;Key&gt;AtIndex</code>格式的方法。如果<code>countOf&lt;Key&gt;</code>和另外两个方法中的要个被找到，那么就会返回一个可以响应<code>NSArray</code>所的方法的代理集合(它是<code>NSKeyValueArray</code>，是<code>NSArray</code>的子类)，调用这个代理集合的方法，或者说给这个代理集合发送<code>NSArray</code>的方法，就会以<code>countOf&lt;Key&gt;</code>,<code>objectIn&lt;Key&gt;AtIndex</code>,<code>&lt;Key&gt;AtIndex</code>这几个方法组合的形式调用。还有一个可选的<code>get&lt;Ket&gt;:range:</code>方法。所以你想重新定义KVC的一些功能，你可以添加这些方法，需要注意的是你的方法名要符合KVC的标准命名方法，包括方法签名。</li>
+<li>如果上面的方法没有找到，那么会查找<code>countOf&lt;Key&gt;</code>，<code>enumeratorOf&lt;Key&gt;</code>,<code>memberOf&lt;Key&gt;</code>格式的方法。如果这三个方法都找到，那么就返回一个可以响应NSSet所的方法的代理集合，以送给这个代理集合消息方法，就会以<code>countOf&lt;Key&gt;</code>，<code>enumeratorOf&lt;Key&gt;</code>,<code>memberOf&lt;Key&gt;</code>组合的形式调用。</li>
+<li>如果还没有找到，再检查类方法<code>+ (BOOL)accessInstanceVariablesDirectly</code>,如果返回YES(默认行为)，那么和先前的设值一样，会按<code>_&lt;key&gt;,_is&lt;Key&gt;,&lt;key&gt;,is&lt;Key&gt;</code>的顺序搜索成员变量名，这里不推荐这么做，因为这样直接访问实例变量破坏了封装性，使代码更脆弱。如果重写了类方法<code>+ (BOOL)accessInstanceVariablesDirectly</code>返回NO的话，那么会直接调用<code>valueForUndefinedKey:</code></li>
+<li>还没有找到的话，调用<code>valueForUndefinedKey:</code></li>
+</ul>
+<p>下面再上代码测试<br><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">TwoTimesArray</span> : <span class="title">NSObject</span></span></span><br><span class="line">-(<span class="keyword">void</span>)incrementCount;</span><br><span class="line">-(<span class="built_in">NSUInteger</span>)countOfNumbers;</span><br><span class="line">-(<span class="keyword">id</span>)objectInNumbersAtIndex:(<span class="built_in">NSUInteger</span>)index;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">TwoTimesArray</span>()</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">readwrite</span>,<span class="keyword">assign</span>) <span class="built_in">NSUInteger</span> count;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">copy</span>) <span class="built_in">NSString</span>* arrName;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">TwoTimesArray</span></span></span><br><span class="line">-(<span class="keyword">void</span>)incrementCount&#123;</span><br><span class="line">    <span class="keyword">self</span><span class="variable">.count</span> ++;</span><br><span class="line">&#125;</span><br><span class="line">-(<span class="built_in">NSUInteger</span>)countOfNumbers&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span><span class="variable">.count</span>;</span><br><span class="line"></span><br><span class="line">-(<span class="keyword">id</span>)objectInNumbersAtIndex:(<span class="built_in">NSUInteger</span>)index&#123;     <span class="comment">//当key使用numbers时，KVC会找到这两个方法。</span></span><br><span class="line">    <span class="keyword">return</span> @(index * <span class="number">2</span>);</span><br><span class="line">&#125;</span><br><span class="line">-(<span class="built_in">NSInteger</span>)getNum&#123;                 <span class="comment">//第一个,自己一个一个注释试</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">10</span>;</span><br><span class="line">&#125;</span><br><span class="line">-(<span class="built_in">NSInteger</span>)num&#123;                       <span class="comment">//第二个</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">11</span>;</span><br><span class="line">&#125;</span><br><span class="line">-(<span class="built_in">NSInteger</span>)isNum&#123;                    <span class="comment">//第三个</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">12</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> * argv[]) &#123;</span><br><span class="line">    <span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">        TwoTimesArray* arr = [TwoTimesArray new];</span><br><span class="line">        <span class="built_in">NSNumber</span>* num =   [arr valueForKey:<span class="string">@"num"</span>];</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,num);</span><br><span class="line">        <span class="keyword">id</span> ar = [arr valueForKey:<span class="string">@"numbers"</span>];</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,<span class="built_in">NSStringFromClass</span>([ar class]));</span><br><span class="line">         <span class="built_in">NSLog</span>(<span class="string">@"0:%@     1:%@     2:%@     3:%@"</span>,ar[<span class="number">0</span>],ar[<span class="number">1</span>],ar[<span class="number">2</span>],ar[<span class="number">3</span>]);</span><br><span class="line">        [arr incrementCount];                                                                            <span class="comment">//count加1</span></span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"%lu"</span>,(<span class="keyword">unsigned</span> <span class="keyword">long</span>)[ar count]);                                                         <span class="comment">//打印出1</span></span><br><span class="line">        [arr incrementCount];                                                                            <span class="comment">//count再加1</span></span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"%lu"</span>,(<span class="keyword">unsigned</span> <span class="keyword">long</span>)[ar count]);                                                         <span class="comment">//打印出2</span></span><br><span class="line">        </span><br><span class="line">        [arr setValue:<span class="string">@"newName"</span> forKey:<span class="string">@"arrName"</span>];</span><br><span class="line">        <span class="built_in">NSString</span>* name = [arr valueForKey:<span class="string">@"arrName"</span>];</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,name);</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//打印结果 </span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">17</span> <span class="number">15</span>:<span class="number">39</span>:<span class="number">42.214</span> KVCDemo[<span class="number">1088</span>:<span class="number">74481</span>] <span class="number">10</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">17</span> <span class="number">15</span>:<span class="number">39</span>:<span class="number">42.215</span> KVCDemo[<span class="number">1088</span>:<span class="number">74481</span>] <span class="built_in">NSKeyValueArray</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">17</span> <span class="number">15</span>:<span class="number">41</span>:<span class="number">24.713</span> KVCDemo[<span class="number">1102</span>:<span class="number">75424</span>] <span class="number">0</span>:<span class="number">0</span>     <span class="number">1</span>:<span class="number">2</span>     <span class="number">2</span>:<span class="number">4</span>     <span class="number">3</span>:<span class="number">6</span>                 <span class="comment">//太明显了，直接调用-(id)objectInNumbersAtIndex:(NSUInteger)index;方法</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">17</span> <span class="number">15</span>:<span class="number">39</span>:<span class="number">42.215</span> KVCDemo[<span class="number">1088</span>:<span class="number">74481</span>] <span class="number">1</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">17</span> <span class="number">15</span>:<span class="number">39</span>:<span class="number">42.215</span> KVCDemo[<span class="number">1088</span>:<span class="number">74481</span>] <span class="number">2</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">17</span> <span class="number">15</span>:<span class="number">39</span>:<span class="number">42.215</span> KVCDemo[<span class="number">1088</span>:<span class="number">74481</span>] newName</span><br></pre></td></tr></table></figure></p>
+<p>很明显，上面的代码充分说明了说明了KVC在调用<code>ValueforKey：@”name“</code>时搜索key的机制。不过还有些功能没有全部列出，有兴趣的读者可以写代码去验证。</p>
+<h2 id="在KVC中使用KeyPath"><a href="#在KVC中使用KeyPath" class="headerlink" title="在KVC中使用KeyPath"></a>在KVC中使用KeyPath</h2><p>然而在开发过程中，一个类的成员变量有可能是其他的自定义类，你可以先用KVC获取出来再该属性，然后再次用KVC来获取这个自定义类的属性，但这样是比较繁琐的，对此，KVC提供了一个解决方案，那就是键路径KeyPath。<br><figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- <span class="comment">(nullable id)</span>valueForKeyPath:<span class="comment">(NSString *)</span>keyPath;                  <span class="comment">//通过KeyPath来取值</span></span><br><span class="line">- <span class="comment">(void)</span>setValue:<span class="comment">(nullable id)</span>value forKeyPath:<span class="comment">(NSString *)</span>keyPath;  <span class="comment">//通过KeyPath来设值</span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Address</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Address</span>()</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">copy</span>)<span class="built_in">NSString</span>* country;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Address</span></span></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">People</span> : <span class="title">NSObject</span></span></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">People</span>()</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">copy</span>) <span class="built_in">NSString</span>* name;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">strong</span>) Address* address;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">assign</span>) <span class="built_in">NSInteger</span> age;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">People</span></span></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> * argv[]) &#123;</span><br><span class="line">    <span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">        People* people1 = [People new];</span><br><span class="line">        Address* add = [Address new];</span><br><span class="line">        add<span class="variable">.country</span> = <span class="string">@"China"</span>;</span><br><span class="line">        people1<span class="variable">.address</span> = add;</span><br><span class="line">        <span class="built_in">NSString</span>* country1 = people1<span class="variable">.address</span><span class="variable">.country</span>;</span><br><span class="line">        <span class="built_in">NSString</span> * country2 = [people1 valueForKeyPath:<span class="string">@"address.country"</span>];</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"country1:%@   country2:%@"</span>,country1,country2);</span><br><span class="line">        [people1 setValue:<span class="string">@"USA"</span> forKeyPath:<span class="string">@"address.country"</span>];</span><br><span class="line">         country1 = people1<span class="variable">.address</span><span class="variable">.country</span>;</span><br><span class="line">        country2 = [people1 valueForKeyPath:<span class="string">@"address.country"</span>];</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"country1:%@   country2:%@"</span>,country1,country2);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//打印结果 </span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">17</span> <span class="number">15</span>:<span class="number">55</span>:<span class="number">22.487</span> KVCDemo[<span class="number">1190</span>:<span class="number">82636</span>] country1:China   country2:China</span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">17</span> <span class="number">15</span>:<span class="number">55</span>:<span class="number">22.489</span> KVCDemo[<span class="number">1190</span>:<span class="number">82636</span>] country1:USA   country2:USA</span><br></pre></td></tr></table></figure>
+<p>上面的代码简单在展示了KeyPath是怎么用的。如果你不小心错误的使用了key而非KeyPath的话，KVC会直接查找<code>address.country</code>这个属性，很明显，这个属性并不存在，所以会再调用<code>UndefinedKey</code>相关方法。而KVC对于KeyPath是搜索机制第一步就是分离key，用小数点<code>.</code>来分割key，然后再像普通key一样按照先前介绍的顺序搜索下去。</p>
+<h2 id="KVC如何处理异常"><a href="#KVC如何处理异常" class="headerlink" title="KVC如何处理异常"></a>KVC如何处理异常</h2><p>KVC中最常见的异常就是不小心使用了错误的Key，或者在设值中不小心传递了nil的值，KVC中有专门的方法来处理这些异常。<br>通常在用KVC操作Model时，抛出异常的那两个方法是需要重写的。虽然一般很小出现传递了错误的Key值这种情况，但是如果不小心出现了，直接抛出异常让APP崩溃显然是不合理的。<br>一般在这里直接让这个Key打印出来即可，或者有些特殊情况需要特殊处理。<br>通常情况下，KVC不允许你要在调用<code>setValue：属性值 forKey：@”name“</code>(或者keyPath)时<strong>对非对象</strong>传递一个nil的值。很简单，因为值类型是不能为nil的。如果你不小心传了，KVC会调用<code>setNilValueForKey:</code>方法。这个方法默认是抛出异常，所以一般而言最好还是重写这个方法。</p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[people1 <span class="built_in">set</span>Value:nil <span class="keyword">for</span>Key:@<span class="string">"age"</span>]</span><br><span class="line"> *** Terminating app due <span class="keyword">to</span> uncaught exception 'NSInvalidArgumentException', reason: '[<span class="variable">&lt;People 0x100200080&gt;</span> <span class="built_in">set</span>NilValueForKey]: could not <span class="built_in">set</span> nil as the value <span class="keyword">for</span> the key age.' // 调用<span class="built_in">set</span>NilValueForKey抛出异常</span><br></pre></td></tr></table></figure>
+<p>如果重写<code>setNilValueForKey:</code>就没问题了<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@implementation People</span><br><span class="line"></span><br><span class="line">-(<span class="keyword">void</span>)setNilValueForKey:(NSString *)key&#123;</span><br><span class="line">    NSLog(@<span class="string">"不能将%@设成nil"</span>,key);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"><span class="comment">//打印出</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">17</span> <span class="number">16</span>:<span class="number">19</span>:<span class="number">55.298</span> KVCDemo[<span class="number">1304</span>:<span class="number">92472</span>] 不能将age设成nil</span><br></pre></td></tr></table></figure></p>
+<h2 id="KVC处理非对象和自定义对象"><a href="#KVC处理非对象和自定义对象" class="headerlink" title="KVC处理非对象和自定义对象"></a>KVC处理非对象和自定义对象</h2><p>不是每一个方法都返回对象，但是<code>valueForKey：</code>总是返回一个id对象，如果原本的变量类型是值类型或者结构体，返回值会封装成NSNumber或者NSValue对象。这两个类会处理从数字，布尔值到指针和结构体任何类型。然后开以者需要手动转换成原来的类型。尽管<code>valueForKey：</code>会自动将值类型封装成对象，但是<code>setValue：forKey：</code>却不行。你必须手动将值类型转换成<code>NSNumber</code>或者<code>NSValue</code>类型，才能传递过去。</p>
+<p>对于自定义对象，KVC也会正确以设值和取值。因为传递进去和取出来的都是id类型，所以需要开发者自己担保类型的正确性，运行时Objective-C在发送消息的会检查类型，如果错误会直接抛出异常。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Address* add2 = [Address <span class="keyword">new</span>];</span><br><span class="line">add2.country = @<span class="string">"England"</span>;</span><br><span class="line">[people1 setValue:add2 forKey:@<span class="string">"address"</span>];</span><br><span class="line">NSString* country1 = people1.address.country;</span><br><span class="line">NSString * country2 = [people1 valueForKeyPath:@<span class="string">"address.country"</span>];</span><br><span class="line">NSLog(@<span class="string">"country1:%@   country2:%@"</span>,country1,country2);</span><br><span class="line"><span class="comment">//打印结果</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">17</span> <span class="number">16</span>:<span class="number">29</span>:<span class="number">36.349</span> KVCDemo[<span class="number">1346</span>:<span class="number">95910</span>] country1:England   country2:England</span><br></pre></td></tr></table></figure></p>
+<h2 id="KVC与容器类"><a href="#KVC与容器类" class="headerlink" title="KVC与容器类"></a>KVC与容器类</h2><p>对象的属性可以是一对一的，也可以是一对多的。一对多的属性要么是有序的(数组)，要么是无序的(数组)<br>不可变的有序容器属性(NSArray)和无序容器属性(NSSet)一般可以使用<code>valueForKey:</code>来获取。比如有一个叫items的NSArray属性，你可以用<code>valurForKey:@&quot;items&quot;</code>来获取这个属性。前面<code>valueForKey:</code>的key搜索模式中，我们发现其实KVC使用了一种更灵活的方式来管理容器类。苹果的官方文档也推荐我们实现这些这些特殊的访问器。</p>
+<p>而当对象的属性是可变的容器时，对于有序的容器，可以用下面的方法：</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- <span class="list">(<span class="keyword">NSMutableArray</span> <span class="variable">*)mutableArrayValueForKey:(NSString *</span>)</span>key<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>该方法返回一个可变有序数组，如果调用该方法，KVC的搜索顺序如下</p>
+<ul>
+<li>搜索<code>insertObject:in&lt;Key&gt;AtIndex:</code> , <code>removeObjectFrom&lt;Key&gt;AtIndex:</code> 或者 <code>insert&lt;Key&gt;AdIndexes</code> , <code>remove&lt;Key&gt;AtIndexes</code> 格式的方法<br>如果至少找到一个insert方法和一个remove方法，那么同样返回一个可以响应NSMutableArray所有方法代理集合(类名是<code>NSKeyValueFastMutableArray2</code>)，那么给这个代理集合发送NSMutableArray的方法，以<code>insertObject:in&lt;Key&gt;AtIndex:</code> , <code>removeObjectFrom&lt;Key&gt;AtIndex:</code> 或者 <code>insert&lt;Key&gt;AdIndexes</code> , <code>remove&lt;Key&gt;AtIndexes</code>组合的形式调用。还有两个可选实现的接口：replaceOnjectAtIndex:withObject: , replace<key>AtIndexes:with<key>: 。</key></key></li>
+<li>如果上步的方法没有找到，则搜索<code>set&lt;Key&gt;:</code> 格式的方法，如果找到，那么发送给代理集合的<code>NSMutableArray</code>最终都会调用<code>set&lt;Key&gt;:</code>方法。 也就是说，<code>mutableArrayValueForKey:</code>取出的代理集合修改后，用·set<key>:· 重新赋值回去去。这样做效率会低很多。所以推荐实现上面的方法。</key></li>
+<li>如果上一步的方法还还没有找到，再检查类方法<code>+ (BOOL)accessInstanceVariablesDirectly</code>,如果返回YES(默认行为)，会按_<key>,<key>,的顺序搜索成员变量名，如果找到，那么发送的<code>NSMutableArray</code>消息方法直接交给这个成员变量处理。</key></key></li>
+<li>如果还是找不到，调用<code>valueForUndefinedKey:</code><br>关于<code>mutableArrayValueForKey:</code>的适用场景，我在网上找了很多，发现其一般是用在对<code>NSMutableArray</code>添加Observer上。<br>如果对象属性是个<code>NSMutableAArray、NSMutableSet、NSMutableDictionary</code>等集合类型时，你给它添加KVO时，你会发现当你添加或者移除元素时并不能接收到变化。因为KVO的本质是系统监测到某个属性的内存地址或常量改变时，会添加上<code>- (void)willChangeValueForKey:(NSString *)key</code><br>和<code>- (void)didChangeValueForKey:(NSString *)</code>key方法来发送通知，所以一种解决方法是手动调用者两个方法，但是并不推荐，你永远无法像系统一样真正知道这个元素什么时候被改变。另一种便是利用使用<code>mutableArrayValueForKey:</code>了。</li>
+</ul>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">demo</span> : <span class="title">NSObject</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">strong</span>) <span class="built_in">NSMutableArray</span>* arr;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">demo</span></span></span><br><span class="line">-(<span class="keyword">id</span>)init&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span> == [<span class="keyword">super</span> init])&#123;</span><br><span class="line">        _arr = [<span class="built_in">NSMutableArray</span> new];</span><br><span class="line">        [<span class="keyword">self</span> addObserver:<span class="keyword">self</span> forKeyPath:<span class="string">@"arr"</span> options:<span class="built_in">NSKeyValueObservingOptionNew</span>|<span class="built_in">NSKeyValueObservingOptionOld</span> context:<span class="literal">nil</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line">-(<span class="keyword">void</span>)observeValueForKeyPath:(<span class="built_in">NSString</span> *)keyPath ofObject:(<span class="keyword">id</span>)object change:(<span class="built_in">NSDictionary</span>&lt;<span class="built_in">NSString</span> *,<span class="keyword">id</span>&gt; *)change context:(<span class="keyword">void</span> *)context&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,change);</span><br><span class="line">&#125;</span><br><span class="line">-(<span class="keyword">void</span>)dealloc&#123;</span><br><span class="line">    [<span class="keyword">self</span> removeObserver:<span class="keyword">self</span> forKeyPath:<span class="string">@"arr"</span>]; <span class="comment">//一定要在dealloc里面移除观察</span></span><br><span class="line">&#125;</span><br><span class="line">-(<span class="keyword">void</span>)addItem&#123;</span><br><span class="line">    [_arr addObject:<span class="string">@"1"</span>];</span><br><span class="line">&#125;</span><br><span class="line">-(<span class="keyword">void</span>)addItemObserver&#123;</span><br><span class="line">    [[<span class="keyword">self</span> mutableArrayValueForKey:<span class="string">@"arr"</span>] addObject:<span class="string">@"1"</span>];</span><br><span class="line">&#125;</span><br><span class="line">-(<span class="keyword">void</span>)removeItemObserver&#123;</span><br><span class="line">    [[<span class="keyword">self</span> mutableArrayValueForKey:<span class="string">@"arr"</span>] removeLastObject];</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line">然后再:</span><br><span class="line">demo* d = [demo new];</span><br><span class="line">[d addItem];</span><br><span class="line">[d addItemObserver];</span><br><span class="line">[d removeItemObserver];</span><br><span class="line">        </span><br><span class="line">打印结果</span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">18</span> <span class="number">17</span>:<span class="number">48</span>:<span class="number">22.675</span> KVCDemo[<span class="number">32647</span>:<span class="number">505864</span>] &#123;</span><br><span class="line">    indexes = <span class="string">"&lt;_NSCachedIndexSet: 0x100202c70&gt;[number of indexes: 1 (in 1 ranges), indexes: (1)]"</span>;</span><br><span class="line">    kind = <span class="number">2</span>;</span><br><span class="line">    new =     (</span><br><span class="line">        <span class="number">1</span></span><br><span class="line">    );</span><br><span class="line">&#125;</span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">18</span> <span class="number">17</span>:<span class="number">48</span>:<span class="number">22.677</span> KVCDemo[<span class="number">32647</span>:<span class="number">505864</span>] &#123;</span><br><span class="line">    indexes = <span class="string">"&lt;_NSCachedIndexSet: 0x100202c70&gt;[number of indexes: 1 (in 1 ranges), indexes: (1)]"</span>;</span><br><span class="line">    kind = <span class="number">3</span>;</span><br><span class="line">    old =     (</span><br><span class="line">        <span class="number">1</span></span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从上面的代码可以看出，当只是普通地调用<code>[_arr addObject:@&quot;1&quot;]</code>时，Observer并不会回调，只有<code>[[self mutableArrayValueForKey:@&quot;arr&quot;] addObject:@&quot;1&quot;]</code>;这样写时才能正确地触发KVO。打印出来的数据中，可以看出这次操作的详情，kind可能是指操作方法(我还不是很确认)，old和new并不是成对出现的，当加添新数据时是new，删除数据时是old</p>
+<p>而对于无序的容器，可以用下面的方法：<br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- <span class="list">(<span class="keyword">NSMutableSet</span> <span class="variable">*)mutableSetValueForKey:(NSString *</span>)</span>key<span class="comment">;</span></span><br></pre></td></tr></table></figure></p>
+<p>该方法返回一个可变的无序数组如果调用该方法，KVC的搜索顺序如下</p>
+<ul>
+<li>搜索<code>addObject&lt;Key&gt;Object:</code> , <code>remove&lt;Key&gt;Object:</code> 或者 <code>add&lt;Key&gt;</code> , <code>remove&lt;Key&gt;</code> 格式的方法<br>如果至少找到一个insert方法和一个remove方法，那么同样返回一个可以响应NSMutableSet所有方法代理集合(类名是<code>NSKeyValueFastMutableSet2</code>)，那么给这个代理集合发送NSMutableSet的方法，以<code>addObject&lt;Key&gt;Object:</code> , <code>remove&lt;Key&gt;Object:</code> 或者 <code>add&lt;Key&gt;</code> , <code>remove&lt;Key&gt;</code>组合的形式调用。还有两个可选实现的接口：<code>intersect&lt;Key&gt; , set&lt;Key&gt;:</code> 。</li>
+<li>如果reciever是ManagedObject，那么就不会继续搜索。</li>
+<li>如果上步的方法没有找到，则搜索<code>set&lt;Key&gt;</code>: 格式的方法，如果找到，那么发送给代理集合的<code>NSMutableSet</code>最终都会调用<code>set&lt;Key&gt;:</code>方法。 也就是说，<code>mutableSetValueForKey</code>取出的代理集合修改后，用<code>set&lt;Key&gt;:</code> 重新赋值回去去。这样做效率会低很多。所以推荐实现上面的方法。</li>
+<li>如果上一步的方法还还没有找到，再检查类方法<code>+ (BOOL)accessInstanceVariablesDirectly</code>,如果返回YES(默认行为)，会按_<key>,<key>,的顺序搜索成员变量名，如果找到，那么发送的<code>NSMutableSet</code>消息方法直接交给这个成员变量处理。</key></key></li>
+<li>如果还是找不到，调用<code>valueForUndefinedKey:</code><br>可见，除了检查reciever是ManagedObject以外，其搜索顺序和<code>mutableArrayValueForKey</code>基本一至，</li>
+</ul>
+<p>同样，它们也有对应的keyPath版本<br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- <span class="list">(<span class="keyword">NSMutableArray</span> <span class="variable">*)mutableArrayValueForKeyPath:(NSString *</span>)</span>keyPath<span class="comment">;</span></span><br><span class="line">- <span class="list">(<span class="keyword">NSMutableSet</span> <span class="variable">*)mutableSetValueForKeyPath:(NSString *</span>)</span>keyPath<span class="comment">;</span></span><br></pre></td></tr></table></figure></p>
+<p>iOS5和OSX10.7以后还有个mutableOrdered版本<br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- <span class="list">(<span class="keyword">NSMutableOrderedSet</span> <span class="variable">*)mutableOrderedSetValueForKey:(NSString *</span>)</span>key</span><br></pre></td></tr></table></figure></p>
+<p>这两种KVC的用法我还不是清楚，目前只能找到用于KVO的例子。如果有读者能在项目中用到，希望可以告诉我。</p>
+<h2 id="KVC和字典"><a href="#KVC和字典" class="headerlink" title="KVC和字典"></a>KVC和字典</h2><p>当对NSDictionary对象使用KVC时，<code>valueForKey:</code>的表现行为和<code>objectForKey:</code>一样。所以使用<code>valueForKeyPath:</code>用来访问多层嵌套的字典是比较方便的。</p>
+<p>KVC里面还有两个关于NSDictionary的方法<br><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSDictionary</span>&lt;<span class="built_in">NSString</span> *, <span class="keyword">id</span>&gt; *)dictionaryWithValuesForKeys:(<span class="built_in">NSArray</span>&lt;<span class="built_in">NSString</span> *&gt; *)keys;</span><br><span class="line">- (<span class="keyword">void</span>)setValuesForKeysWithDictionary:(<span class="built_in">NSDictionary</span>&lt;<span class="built_in">NSString</span> *, <span class="keyword">id</span>&gt; *)keyedValues;</span><br></pre></td></tr></table></figure></p>
+<p><code>dictionaryWithValuesForKeys:</code>是指输入一组key，返回这组key对应的属性，再组成一个字典。<br><code>setValuesForKeysWithDictionary</code>是用来修改Model中对应key的属性。下面直接用代码会更直观一点<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Address* add = [Address <span class="keyword">new</span>];</span><br><span class="line">add.country = @<span class="string">"China"</span>;</span><br><span class="line">add.province = @<span class="string">"Guang Dong"</span>;</span><br><span class="line">add.city = @<span class="string">"Shen Zhen"</span>;</span><br><span class="line">add.district = @<span class="string">"Nan Shan"</span>;</span><br><span class="line">NSArray* arr = @[@<span class="string">"country"</span>,@<span class="string">"province"</span>,@<span class="string">"city"</span>,@<span class="string">"district"</span>];</span><br><span class="line">NSDictionary* dict = [add dictionaryWithValuesForKeys:arr]; <span class="comment">//把对应key所有的属性全部取出来</span></span><br><span class="line">NSLog(@<span class="string">"%@"</span>,dict);</span><br><span class="line"></span><br><span class="line">NSDictionary* modifyDict = @&#123;@<span class="string">"country"</span>:@<span class="string">"USA"</span>,@<span class="string">"province"</span>:@<span class="string">"california"</span>,@<span class="string">"city"</span>:@<span class="string">"Los angle"</span>&#125;;</span><br><span class="line">[add setValuesForKeysWithDictionary:modifyDict];            <span class="comment">//用key Value来修改Model的属性</span></span><br><span class="line">NSLog(@<span class="string">"country:%@  province:%@ city:%@"</span>,add.country,add.province,add.city);</span><br><span class="line"></span><br><span class="line"><span class="comment">//打印结果</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">19</span> <span class="number">11</span>:<span class="number">54</span>:<span class="number">30.846</span> KVCDemo[<span class="number">6607</span>:<span class="number">198900</span>] &#123;</span><br><span class="line">    city = <span class="string">"Shen Zhen"</span>;</span><br><span class="line">    country = China;</span><br><span class="line">    district = <span class="string">"Nan Shan"</span>;</span><br><span class="line">    province = <span class="string">"Guang Dong"</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">19</span> <span class="number">11</span>:<span class="number">54</span>:<span class="number">30.847</span> KVCDemo[<span class="number">6607</span>:<span class="number">198900</span>] country:USA  province:california city:Los angle</span><br></pre></td></tr></table></figure></p>
+<p>打印出来的结果完全符合预期。</p>
+<h2 id="KVC的内部实现机制"><a href="#KVC的内部实现机制" class="headerlink" title="KVC的内部实现机制"></a>KVC的内部实现机制</h2><p>前面我们对析了KVC是怎么搜索key的。所以如果明白了key的搜索顺序，是可以自己写代码实现KVC的。在考虑到集合和keyPath的情况下，KVC的实现会比较复杂，我们只写代码实现最普通的取值和设值即可。<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="annotation">@interface</span> NSObject(MYKVC)</span><br><span class="line">-(<span class="typename">void</span>)<span class="string">setMyValue:</span>(id)value <span class="string">forKey:</span>(NSString*)key;</span><br><span class="line">-(id)<span class="string">myValueforKey:</span>(NSString*)key;</span><br><span class="line"></span><br><span class="line"><span class="annotation">@end</span></span><br><span class="line"><span class="annotation">@implementation</span> NSObject(MYKVC)</span><br><span class="line">-(<span class="typename">void</span>)<span class="string">setMyValue:</span>(id)value <span class="string">forKey:</span>(NSString *)key&#123;</span><br><span class="line">    <span class="keyword">if</span> (key == nil || key.length == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ([value <span class="string">isKindOfClass:</span>[NSNull <span class="class"><span class="keyword">class</span>]]) &#123;</span></span><br><span class="line">        [self <span class="string">setNilValueForKey:</span>key]; <span class="comment">//如果需要完全自定义，那么这里需要写一个setMyNilValueForKey，但是必要性不是很大，就省略了</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (![value <span class="string">isKindOfClass:</span>[NSObject <span class="class"><span class="keyword">class</span>]]) &#123;</span></span><br><span class="line">        <span class="annotation">@throw</span> @<span class="string">"must be s NSobject type"</span>;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    NSString* funcName = [NSString <span class="string">stringWithFormat:</span>@<span class="string">"set%@:"</span>,key.capitalizedString];</span><br><span class="line">    <span class="keyword">if</span> ([self <span class="string">respondsToSelector:</span>NSSelectorFromString(funcName)]) &#123;</span><br><span class="line">        [self <span class="string">performSelector:</span>NSSelectorFromString(funcName) <span class="string">withObject:</span>value];</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    unsigned <span class="typename">int</span> count;</span><br><span class="line">    BOOL flag = <span class="literal">false</span>;</span><br><span class="line">    Ivar* vars = class_copyIvarList([self <span class="class"><span class="keyword">class</span>], &amp;<span class="title">count</span>);</span><br><span class="line">    <span class="title">for</span> (<span class="title">NSInteger</span> <span class="title">i</span> = 0; <span class="title">i</span>&lt;<span class="title">count</span>; <span class="title">i</span>++) &#123;</span></span><br><span class="line">        Ivar var = vars[i];</span><br><span class="line">        NSString* keyName = [[NSString <span class="string">stringWithCString:</span>ivar_getName(var) <span class="string">encoding:</span>NSUTF8StringEncoding] <span class="string">substringFromIndex:</span><span class="number">1</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> ([keyName <span class="string">isEqualToString:</span>[NSString <span class="string">stringWithFormat:</span>@<span class="string">"_%@"</span>,key]]) &#123;</span><br><span class="line">            flag = <span class="literal">true</span>;</span><br><span class="line">            object_setIvar(self, var, value);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> ([keyName <span class="string">isEqualToString:</span>key]) &#123;</span><br><span class="line">            flag = <span class="literal">true</span>;</span><br><span class="line">            object_setIvar(self, var, value);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!flag) &#123;</span><br><span class="line">        [self <span class="string">setValue:</span>value <span class="string">forUndefinedKey:</span>key];<span class="comment">//如果需要完全自定义，那么这里需要写一个self setMyValue:value forUndefinedKey:key，但是必要性不是很大，就省略了</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">-(id)<span class="string">myValueforKey:</span>(NSString *)key&#123;</span><br><span class="line">    <span class="keyword">if</span> (key == nil || key.length == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> [NSNull <span class="keyword">new</span>]; <span class="comment">//其实不能这么写的</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//这里为了更方便，我就不做相关集合的方法查询了</span></span><br><span class="line">    NSString* funcName = [NSString <span class="string">stringWithFormat:</span>@<span class="string">"gett%@:"</span>,key.capitalizedString];</span><br><span class="line">    <span class="keyword">if</span> ([self <span class="string">respondsToSelector:</span>NSSelectorFromString(funcName)]) &#123;</span><br><span class="line">       <span class="keyword">return</span> [self <span class="string">performSelector:</span>NSSelectorFromString(funcName)];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    unsigned <span class="typename">int</span> count;</span><br><span class="line">    BOOL flag = <span class="literal">false</span>;</span><br><span class="line">    Ivar* vars = class_copyIvarList([self <span class="class"><span class="keyword">class</span>], &amp;<span class="title">count</span>);</span><br><span class="line">    <span class="title">for</span> (<span class="title">NSInteger</span> <span class="title">i</span> = 0; <span class="title">i</span>&lt;<span class="title">count</span>; <span class="title">i</span>++) &#123;</span></span><br><span class="line">        Ivar var = vars[i];</span><br><span class="line">        NSString* keyName = [[NSString <span class="string">stringWithCString:</span>ivar_getName(var) <span class="string">encoding:</span>NSUTF8StringEncoding] <span class="string">substringFromIndex:</span><span class="number">1</span>];</span><br><span class="line">        <span class="keyword">if</span> ([keyName <span class="string">isEqualToString:</span>[NSString <span class="string">stringWithFormat:</span>@<span class="string">"_%@"</span>,key]]) &#123;</span><br><span class="line">            flag = <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">return</span>     object_getIvar(self, var);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> ([keyName <span class="string">isEqualToString:</span>key]) &#123;</span><br><span class="line">            flag = <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">return</span>     object_getIvar(self, var);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!flag) &#123;</span><br><span class="line">        [self <span class="string">valueForUndefinedKey:</span>key];<span class="comment">//如果需要完全自定义，那么这里需要写一个self myValueForUndefinedKey，但是必要性不是很大，就省略了</span></span><br><span class="line">    &#125;</span><br><span class="line">   <span class="keyword">return</span> [NSNull <span class="keyword">new</span>]; <span class="comment">//其实不能这么写的</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="annotation">@end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Address* add = [Address <span class="keyword">new</span>];</span><br><span class="line">add.country = @<span class="string">"China"</span>;</span><br><span class="line">add.province = @<span class="string">"Guang Dong"</span>;</span><br><span class="line">add.city = @<span class="string">"Shen Zhen"</span>;</span><br><span class="line">add.district = @<span class="string">"Nan Shan"</span>;</span><br><span class="line"></span><br><span class="line">[add <span class="string">setMyValue:</span>nil <span class="string">forKey:</span>@<span class="string">"area"</span>];            <span class="comment">//测试设置 nil value</span></span><br><span class="line">[add <span class="string">setMyValue:</span>@<span class="string">"UK"</span> <span class="string">forKey:</span>@<span class="string">"country"</span>];</span><br><span class="line">[add <span class="string">setMyValue:</span>@<span class="string">"South"</span> <span class="string">forKey:</span>@<span class="string">"area"</span>];</span><br><span class="line">[add <span class="string">setMyValue:</span>@<span class="string">"300169"</span> <span class="string">forKey:</span>@<span class="string">"postCode"</span>];</span><br><span class="line">NSLog(@<span class="string">"country:%@  province:%@ city:%@ postCode:%@"</span>,add.country,add.province,add.city,add._postCode);</span><br><span class="line">NSString* postCode = [add <span class="string">myValueforKey:</span>@<span class="string">"postCode"</span>];</span><br><span class="line">NSString* country = [add <span class="string">myValueforKey:</span>@<span class="string">"country"</span>];</span><br><span class="line">NSLog(@<span class="string">"country:%@ postCode: %@"</span>,country,postCode);</span><br><span class="line"></span><br><span class="line"><span class="comment">//打印结果：</span></span><br><span class="line"></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">19</span> <span class="number">14</span>:<span class="number">29</span>:<span class="number">39.498</span> KVCDemo[<span class="number">7273</span>:<span class="number">275129</span>] <span class="string">country:</span>UK  <span class="string">province:</span>South <span class="string">city:</span>Shen Zhen <span class="string">postCode:</span><span class="number">300169</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">19</span> <span class="number">14</span>:<span class="number">29</span>:<span class="number">39.499</span> KVCDemo[<span class="number">7273</span>:<span class="number">275129</span>] <span class="string">country:</span>UK <span class="string">postCode:</span> <span class="number">300169</span></span><br></pre></td></tr></table></figure></p>
+<p>上面就是自己写代码实现KVC的部分功能。其中我省略了自定义KVC错误方法，省略了部分KVC搜索key的步骤，但是逻辑是很清晰明了的，后面的测试也符合预期。当然这只是我自己实现KVC的思路，Apple也许并不是这么做的。</p>
+<h2 id="KVC的正确性验证"><a href="#KVC的正确性验证" class="headerlink" title="KVC的正确性验证"></a>KVC的正确性验证</h2><p>KVC提供了属性值,用来验证key对应的Value是否可用的方法<br><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">BOOL</span>)validateValue:(<span class="keyword">inout</span> <span class="keyword">id</span> __nullable * __nonnull)ioValue forKey:(<span class="built_in">NSString</span> *)inKey error:(<span class="keyword">out</span> <span class="built_in">NSError</span> **)outError;</span><br></pre></td></tr></table></figure></p>
+<p>这个方法的默认实现是去探索类里面是否有一个这样的方法：<code>-(BOOL)validate&lt;Key&gt;:error:</code>如果有这个方法，就调用这个方法来返回，没有的话就直接返回YES<br><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Address</span></span></span><br><span class="line">-(<span class="built_in">BOOL</span>)validateCountry:(<span class="keyword">id</span> *)value error:(<span class="keyword">out</span> <span class="built_in">NSError</span> * _Nullable __autoreleasing *)outError&#123;  <span class="comment">//在implementation里面加这个方法，它会验证是否设了非法的value</span></span><br><span class="line">    <span class="built_in">NSString</span>* country = *value;</span><br><span class="line">    country = country<span class="variable">.capitalizedString</span>;</span><br><span class="line">    <span class="keyword">if</span> ([country isEqualToString:<span class="string">@"Japan"</span>]) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NO</span>;                                                                             <span class="comment">//如果国家是日本，就返回NO，这里省略了错误提示，</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="built_in">NSError</span>* error;</span><br><span class="line"><span class="keyword">id</span> value = <span class="string">@"japan"</span>;</span><br><span class="line"><span class="built_in">NSString</span>* key = <span class="string">@"country"</span>;</span><br><span class="line"><span class="built_in">BOOL</span> result = [add validateValue:&amp;value forKey:key error:&amp;error]; <span class="comment">//如果没有重写-(BOOL)-validate&lt;Key&gt;:error:，默认返回Yes</span></span><br><span class="line"><span class="keyword">if</span> (result) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"键值匹配"</span>);</span><br><span class="line">    [add setValue:value forKey:key];</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"键值不匹配"</span>); <span class="comment">//不能设为日本，基他国家都行</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">NSString</span>* country = [add valueForKey:<span class="string">@"country"</span>];</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"country:%@"</span>,country);</span><br><span class="line"><span class="comment">//打印结果 </span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">14</span>:<span class="number">55</span>:<span class="number">12.055</span> KVCDemo[<span class="number">867</span>:<span class="number">58871</span>] 键值不匹配</span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">14</span>:<span class="number">55</span>:<span class="number">12.056</span> KVCDemo[<span class="number">867</span>:<span class="number">58871</span>] country:China</span><br></pre></td></tr></table></figure></p>
+<p>如上面的代码，当开发者需要验证能不能用KVC设定某个值时，可以调用<code>validateValue: forKey:</code>这个方法来验证，如果这个类的开发者实现了<code>-(BOOL)validate&lt;Key&gt;:error:</code>这个方法，那么KVC就会直接调用这个方法来返回，如果没有，就直接返回YES，注意，KVC在设值时不会主动去做验证，需要开发者手动去验证。所以即使你在类里面写了验证方法，但是KVC因为不会去主动验证，所以还是能够设值成功。</p>
+<h2 id="KVC的使用"><a href="#KVC的使用" class="headerlink" title="KVC的使用"></a>KVC的使用</h2><p>KVC在iOS开发中是绝不可少的利器，这种基于运行时的编程方式极大地提高了灵活性，简化了代码，甚至实现很多难以想像的功能，KVC也是许多iOS开发黑魔法的基础。下面我来列举iOS开发中KVC的使用场景</p>
+<p>####动态地取值和设值<br>利用KVC动态的取值和设值是最基本的用途了。相信每一个iOS开发者都能熟练掌握，</p>
+<p>####用KVC来访问和修改私有变量<br>对于类里的私有属性，Objective-C是无法直接访问的，但是KVC是可以的，请参考本文前面的Dog类的例子。</p>
+<p>####Model和字典转换<br>这是KVC强大作用的又一次体现，请参考我写的<a href="http://www.jianshu.com/p/53b1e5785b24" target="_blank" rel="external">iOS开发技巧系列—打造强大的BaseMod系列文章</a>，里面<br>充分地运用了KVC和Objc的runtime组合的技巧，只用了短短数行代码就是完成了很多功能。</p>
+<p>####修改一些控件的内部属性<br>这也是iOS开发中必不可少的小技巧。众所周知很多UI控件都由很多内部UI控件组合而成的，但是Apple度没有提供这访问这些空间的API，这样我们就无法正常地访问和修改这些控件的样式。而KVC在大多数情况可下可以解决这个总是。最常用的就是个性化UITextField中的placeHolderText了。<br>下面演示如果修改placeHolder的文字样式。这里的关键点是如果获取你要修改的样式的属性名，也就是key或者keyPath名。<br><img src="http://upload-images.jianshu.io/upload_images/1281203-58710faea20a803e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="修改placeHolder的样式"></p>
+<p>一般情况下可以运用runtime来获取Apple不想开放的属性名<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">let count<span class="value">:UnsafeMutablePointer&lt;UInt32&gt; =  UnsafeMutablePointer&lt;UInt32&gt;()</span><br><span class="line">var properties = <span class="function">class_copyIvarList</span>(UITextField.self, count)</span><br><span class="line">while properties.memory.debugDescription !=  <span class="string">"0x0000000000000000"</span>&#123;</span><br><span class="line">    let t = <span class="function">ivar_getName</span>(properties.memory)</span><br><span class="line">    let n = <span class="function">NSString</span>(CString: t, encoding: NSUTF8StringEncoding)</span><br><span class="line">    <span class="function">print</span>(n)                                                         //打印出所有属性，这里我用了Swift语言</span><br><span class="line">    properties = properties.<span class="function">successor</span>()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//上面省略了部分属性</span><br><span class="line"><span class="function">Optional</span>(_disabledBackgroundView)</span><br><span class="line"><span class="function">Optional</span>(_systemBackgroundView)</span><br><span class="line"><span class="function">Optional</span>(_floatingContentView)</span><br><span class="line"><span class="function">Optional</span>(_contentBackdropView)</span><br><span class="line"><span class="function">Optional</span>(_fieldEditorBackgroundView)</span><br><span class="line"><span class="function">Optional</span>(_fieldEditorEffectView)</span><br><span class="line"><span class="function">Optional</span>(_displayLabel)</span><br><span class="line"><span class="function">Optional</span>(_placeholderLabel)                                         //这个正是我想要修改的属性。</span><br><span class="line"><span class="function">Optional</span>(_dictationLabel)</span><br><span class="line"><span class="function">Optional</span>(_suffixLabel)</span><br><span class="line"><span class="function">Optional</span>(_prefixLabel)</span><br><span class="line"><span class="function">Optional</span>(_iconView)</span><br><span class="line">//下面省略了部分属性</span></span><br></pre></td></tr></table></figure></p>
+<p>可以从里面看到其他还有很多东西可以修改，运用KVC设值可以获得自己想要的效果。</p>
+<p>####操作集合</p>
+<p>Apple对KVC的<code>valueForKey:</code>方法作了一些特殊的实现，比如说NSArray和NSSet这样的容器类就实现了这些方法。所以可以用KVC很方便地操作集合</p>
+<p>#####用KVC实现高阶消息传递<br>当对容器类使用KVC时，<code>valueForKey:</code>将会被传递给容器中的每一个对象，而不是容器本身进行操作。结果会被添加进返回的容器中，这样，开发者可以很方便的操作集合来返回另一个集合。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">NSArray* arrStr = @[@<span class="string">"english"</span>,@<span class="string">"franch"</span>,@<span class="string">"chinese"</span>];</span><br><span class="line">NSArray* arrCapStr = [arrStr valueForKey:@<span class="string">"capitalizedString"</span>];</span><br><span class="line"><span class="keyword">for</span> (NSString* str  in arrCapStr) &#123;</span><br><span class="line">    NSLog(@<span class="string">"%@"</span>,str);</span><br><span class="line">&#125;</span><br><span class="line">NSArray* arrCapStrLength = [arrStr valueForKeyPath:@<span class="string">"capitalizedString.length"</span>];</span><br><span class="line"><span class="keyword">for</span> (NSNumber* length  in arrCapStrLength) &#123;</span><br><span class="line">    NSLog(@<span class="string">"%ld"</span>,(<span class="keyword">long</span>)length.integerValue);</span><br><span class="line">&#125;</span><br><span class="line">打印结果</span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">29</span>:<span class="number">14.239</span> KVCDemo[<span class="number">1356</span>:<span class="number">118667</span>] English</span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">29</span>:<span class="number">14.240</span> KVCDemo[<span class="number">1356</span>:<span class="number">118667</span>] Franch</span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">29</span>:<span class="number">14.240</span> KVCDemo[<span class="number">1356</span>:<span class="number">118667</span>] Chinese</span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">29</span>:<span class="number">14.240</span> KVCDemo[<span class="number">1356</span>:<span class="number">118667</span>] <span class="number">7</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">29</span>:<span class="number">14.241</span> KVCDemo[<span class="number">1356</span>:<span class="number">118667</span>] <span class="number">6</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">29</span>:<span class="number">14.241</span> KVCDemo[<span class="number">1356</span>:<span class="number">118667</span>] <span class="number">7</span></span><br></pre></td></tr></table></figure>
+<p>方法<code>capitalizedString</code>被传递到NSArray中的每一项，这样，NSArray的每一员都会执行<code>capitalizedString</code>并返回一个包含结果的新的NSArray。从打印结果可以看出，所有String都成功以转成了大写。<br>同样如果要执行多个方法也可以用<code>valueForKeyPath:</code>方法。它先会对每一个成员调用 <code>capitalizedString</code>方法，然后再调用length，因为lenth方法返回是一个数字，所以返回结果以NSNumber的形式保存在新数组里。</p>
+<p>#####用KVC中的函数操作集合<br>KVC同时还提供了很复杂的函数，主要有下面这些<br>①简单集合运算符<br>简单集合运算符共有<code>@avg， @count ， @max ， @min ，@sum5</code>种，都表示啥不用我说了吧， 目前还不支持自定义。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">@interface Book : NSObject</span><br><span class="line">@property (nonatomic,copy)  NSString* name;</span><br><span class="line">@property (nonatomic,assign)  CGFloat price;</span><br><span class="line">@end</span><br><span class="line">@implementation Book</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Book *book1 = [Book <span class="keyword">new</span>];</span><br><span class="line">book1.name = @<span class="string">"The Great Gastby"</span>;</span><br><span class="line">book1.price = <span class="number">22</span>;</span><br><span class="line">Book *book2 = [Book <span class="keyword">new</span>];</span><br><span class="line">book2.name = @<span class="string">"Time History"</span>;</span><br><span class="line">book2.price = <span class="number">12</span>;</span><br><span class="line">Book *book3 = [Book <span class="keyword">new</span>];</span><br><span class="line">book3.name = @<span class="string">"Wrong Hole"</span>;</span><br><span class="line">book3.price = <span class="number">111</span>;</span><br><span class="line"></span><br><span class="line">Book *book4 = [Book <span class="keyword">new</span>];</span><br><span class="line">book4.name = @<span class="string">"Wrong Hole"</span>;</span><br><span class="line">book4.price = <span class="number">111</span>;</span><br><span class="line"></span><br><span class="line">NSArray* arrBooks = @[book1,book2,book3,book4];</span><br><span class="line">NSNumber* sum = [arrBooks valueForKeyPath:@<span class="string">"@sum.price"</span>];</span><br><span class="line">NSLog(@<span class="string">"sum:%f"</span>,sum.floatValue);</span><br><span class="line">NSNumber* avg = [arrBooks valueForKeyPath:@<span class="string">"@avg.price"</span>];</span><br><span class="line">NSLog(@<span class="string">"avg:%f"</span>,avg.floatValue);</span><br><span class="line">NSNumber* count = [arrBooks valueForKeyPath:@<span class="string">"@count"</span>];</span><br><span class="line">NSLog(@<span class="string">"count:%f"</span>,count.floatValue);</span><br><span class="line">NSNumber* min = [arrBooks valueForKeyPath:@<span class="string">"@min.price"</span>];</span><br><span class="line">NSLog(@<span class="string">"min:%f"</span>,min.floatValue);</span><br><span class="line">NSNumber* max = [arrBooks valueForKeyPath:@<span class="string">"@max.price"</span>];</span><br><span class="line">NSLog(@<span class="string">"max:%f"</span>,max.floatValue);</span><br><span class="line"></span><br><span class="line">打印结果</span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">45</span>:<span class="number">54.696</span> KVCDemo[<span class="number">1484</span>:<span class="number">127089</span>] sum:<span class="number">256.000000</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">45</span>:<span class="number">54.697</span> KVCDemo[<span class="number">1484</span>:<span class="number">127089</span>] avg:<span class="number">64.000000</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">45</span>:<span class="number">54.697</span> KVCDemo[<span class="number">1484</span>:<span class="number">127089</span>] count:<span class="number">4.000000</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">45</span>:<span class="number">54.697</span> KVCDemo[<span class="number">1484</span>:<span class="number">127089</span>] min:<span class="number">12.000000</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">45</span>:<span class="number">54.697</span> KVCDemo[<span class="number">1484</span>:<span class="number">127089</span>] max:<span class="number">111.000000</span></span><br></pre></td></tr></table></figure></p>
+<p>②对象运算符<br>比集合运算符稍微复杂，能以数组的方式返回指定的内容，一共有两种：<br><code>@distinctUnionOfObjects</code><br><code>@unionOfObjects</code><br>它们的返回值都是NSArray，区别是前者返回的元素都是唯一的，是去重以后的结果；后者返回的元素是全集。<br>用法如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">NSLog(@<span class="string">"distinctUnionOfObjects"</span>);</span><br><span class="line">NSArray* arrDistinct = [arrBooks valueForKeyPath:@<span class="string">"@distinctUnionOfObjects.price"</span>];</span><br><span class="line"><span class="keyword">for</span> (NSNumber *price in arrDistinct) &#123;</span><br><span class="line">    NSLog(@<span class="string">"%f"</span>,price.floatValue);</span><br><span class="line">&#125;</span><br><span class="line">NSLog(@<span class="string">"unionOfObjects"</span>);</span><br><span class="line">NSArray* arrUnion = [arrBooks valueForKeyPath:@<span class="string">"@unionOfObjects.price"</span>];</span><br><span class="line"><span class="keyword">for</span> (NSNumber *price in arrUnion) &#123;</span><br><span class="line">    NSLog(@<span class="string">"%f"</span>,price.floatValue);</span><br><span class="line">&#125;</span><br><span class="line">        </span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">47</span>:<span class="number">34.490</span> KVCDemo[<span class="number">1522</span>:<span class="number">128840</span>] distinctUnionOfObjects</span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">47</span>:<span class="number">34.490</span> KVCDemo[<span class="number">1522</span>:<span class="number">128840</span>] <span class="number">111.000000</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">47</span>:<span class="number">34.490</span> KVCDemo[<span class="number">1522</span>:<span class="number">128840</span>] <span class="number">12.000000</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">47</span>:<span class="number">34.490</span> KVCDemo[<span class="number">1522</span>:<span class="number">128840</span>] <span class="number">22.000000</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">47</span>:<span class="number">34.490</span> KVCDemo[<span class="number">1522</span>:<span class="number">128840</span>] unionOfObjects</span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">47</span>:<span class="number">34.490</span> KVCDemo[<span class="number">1522</span>:<span class="number">128840</span>] <span class="number">22.000000</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">47</span>:<span class="number">34.490</span> KVCDemo[<span class="number">1522</span>:<span class="number">128840</span>] <span class="number">12.000000</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">47</span>:<span class="number">34.490</span> KVCDemo[<span class="number">1522</span>:<span class="number">128840</span>] <span class="number">111.000000</span></span><br><span class="line"><span class="number">2016</span>-<span class="number">04</span>-<span class="number">20</span> <span class="number">16</span>:<span class="number">47</span>:<span class="number">34.490</span> KVCDemo[<span class="number">1522</span>:<span class="number">128840</span>] <span class="number">111.000000</span></span><br></pre></td></tr></table></figure></p>
+<p>前者会将重复的价格去除后返回所有价格，后者直接返回所有的图书价格。(因为只返回价格，没有返回图书，感觉用处不大。)<br>③Array和Set操作符<br>这种情况更复杂了，说的是集合中包含集合的情况，我们执行了如下的一段代码：<br>@distinctUnionOfArrays<br>@unionOfArrays<br>@distinctUnionOfSets<br><code>@distinctUnionOfArrays：</code>该操作会返回一个数组，这个数组包含不同的对象，不同的对象是在从关键路径到操作器右边的被指定的属性里<br><code>@unionOfArrays</code> 该操作会返回一个数组，这个数组包含的对象是在从关键路径到操作器右边的被指定的属性里和@distinctUnionOfArrays不一样，重复的对象不会被移除<br><code>@distinctUnionOfSets</code> 和<code>@distinctUnionOfArrays</code>类似。因为Set本身就不支持重复。</p>
+<p>####KVO<br>你没看错，KVO是基于KVC实现的。那么是怎么用KVC实现KVO的呢，请期待下章。</p>
+<p>##总结<br>本文全方位介绍了KVC的原理和各种用法。相信读者看完后对会KVC会有更完全的理解，也会在项目里更好的运用KVC。其实这里面所有的东西在官方文档里都有详细的讲解说明。只不过全是英文的，我也看过几遍，但是英语不好会看得很吃力，比如官方在介绍@distinctUnionOfArrays时的那句话我想了很好久也不是很明白，而且官方的示例代码也做得不够好，所以很难找出某些功能的适用场景。但我还是推荐各位开发者能够学好英语去看官方文档。再结合StackOverFlow和Google。真的可以解决绝大多数开发中碰到的难题了。这篇文章就到这里，下篇我向大家介绍KVO。</p>
+<div class="ds-thread" data-thread-key="2016/03/14/ios-essay-grand-model-no4" data-title="ios-essay-grand-model-no4" data-url="http://stanhu.cc/2016/03/14/ios-essay-grand-model-no4"></div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS开发/" rel="tag">#iOS开发</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/02/ios-development-skill-with-generic-class-to-store-app-data/" rel="next" title="iOS开发技巧系列---使用泛型类来存储APP数据.">
+                <i class="fa fa-chevron-left"></i> iOS开发技巧系列---使用泛型类来存储APP数据.
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"syanhu"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- 多说公共JS代码 end -->
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="Stan Hu" />
+          <p class="site-author-name" itemprop="name">Stan Hu</p>
+          <p class="site-description motion-element" itemprop="description">学习总结，思考感悟，求知奋斗</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+          
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/DuckDeck" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/stan-hu" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> ZhiHu
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/users/ba6dc2f48796/latest_articles" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> JianShu
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#KVC在iOS中的定义"><span class="nav-number">1.</span> <span class="nav-text">KVC在iOS中的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KVC是怎么寻找Key的"><span class="nav-number">2.</span> <span class="nav-text">KVC是怎么寻找Key的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在KVC中使用KeyPath"><span class="nav-number">3.</span> <span class="nav-text">在KVC中使用KeyPath</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KVC如何处理异常"><span class="nav-number">4.</span> <span class="nav-text">KVC如何处理异常</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KVC处理非对象和自定义对象"><span class="nav-number">5.</span> <span class="nav-text">KVC处理非对象和自定义对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KVC与容器类"><span class="nav-number">6.</span> <span class="nav-text">KVC与容器类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KVC和字典"><span class="nav-number">7.</span> <span class="nav-text">KVC和字典</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KVC的内部实现机制"><span class="nav-number">8.</span> <span class="nav-text">KVC的内部实现机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KVC的正确性验证"><span class="nav-number">9.</span> <span class="nav-text">KVC的正确性验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KVC的使用"><span class="nav-number">10.</span> <span class="nav-text">KVC的使用</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Stan Hu</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'syanhu';
+      var disqus_identifier = '2016/04/21/ios-development-skill-KVC/';
+      var disqus_title = 'iOS开发技巧系列---详解KVC(我告诉你KVC的一切)';
+      var disqus_url = 'http://stanhu.cc/2016/04/21/ios-development-skill-KVC/';
+
+      function run_disqus_script(disqus_script){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+      
+        run_disqus_script('embed.js');
+      
+    </script>
+  
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>
